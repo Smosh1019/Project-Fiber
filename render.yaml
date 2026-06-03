@@ -1,7 +1,7 @@
 # Render.com deployment config (optional - auto-detected)
 services:
   - type: web
-    name: ulundi-fiber-map
+    name: project-fiber
     env: static
     buildCommand: echo "No build needed"
     staticPublishPath: .
