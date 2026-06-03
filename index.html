@@ -184,6 +184,38 @@ const LAYERS = [
   { id:'houses',   table:'d_houses',   label:'Houses / Drops',      color:'#c084fc', type:'point',   stat:'s-houses'   },
 ];
 
+const TABLES = {
+  vw_poles: {
+    color: '#00e5ff',
+    type: 'point',
+    label: 'Pole'
+  },
+
+  vw_manholes: {
+    color: '#ff6b35',
+    type: 'point',
+    label: 'Manhole'
+  },
+
+  vw_houses: {
+    color: '#ffff00',
+    type: 'point',
+    label: 'House'
+  },
+
+  vw_48f: {
+    color: '#00ff88',
+    type: 'line',
+    label: '48F Fiber'
+  },
+
+  vw_144f: {
+    color: '#00cc66',
+    type: 'line',
+    label: '144F Fiber'
+  }
+};
+
 const MAPS = {
   satellite: { next:'streets',  btnLabel:'🗺 STREETS',   tiles:'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', attr:'© Google' },
   streets:   { next:'satellite',btnLabel:'🛰 SATELLITE', tiles:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',       attr:'© OSM contributors' },
