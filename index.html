@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ulundi Fiber Network</title>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:     #080d18;
+      --panel:  rgba(8,13,24,0.90);
+      --border: rgba(0,200,255,0.18);
+      --accent: #00c8ff;
+      --green:  #00ff99;
+      --warn:   #ffd700;
+      --red:    #ff4d6d;
+      --text:   #cce8f4;
+      --muted:  #5d7a8a;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Rajdhani',sans-serif; background:var(--bg); color:var(--text); overflow:hidden; }
+    #map { width:100vw; height:100vh; }
+
+    /* HEADER */
+    #header {
+      position:absolute; top:0; left:0; right:0; height:52px;
+      background:linear-gradient(90deg,rgba(0,10,30,0.97),rgba(0,30,55,0.92));
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; padding:0 18px; gap:14px;
+      z-index:1000; backdrop-filter:blur(12px);
+    }
+    .logo { font-size:19px; font-weight:700; letter-spacing:2px; color:var(--accent); text-transform:uppercase; }
+    .logo span { color:var(--green); }
+    .tagline { font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; font-family:'Share Tech Mono',monospace; }
+    .hspacer { flex:1; }
+    #coord-display {
+      font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted);
+      background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:4px; border:1px solid var(--border);
+    }
+    #live-pill {
+      display:flex; align-items:center; gap:7px;
+      background:rgba(0,200,100,0.08); border:1px solid rgba(0,255,150,0.25);
+      border-radius:20px; padding:4px 12px; font-size:11px; font-family:'Share Tech Mono',monospace;
+    }
+    #live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    /* LAYER PANEL */
+    #panel {
+      position:absolute; top:62px; left:12px; width:228px;
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:10px; backdrop-filter:blur(16px); z-index:900; overflow:hidden;
+    }
+    .panel-hdr {
+      padding:9px 14px; font-size:10px; font-family:'Share Tech Mono',monospace;
+      letter-spacing:2px; color:var(--muted); text-transform:uppercase;
+      border-bottom:1px solid var(--border); display:flex; justify-content:space-between;
+    }
+    .layer-row {
+      display:flex; align-items:center; gap:9px; padding:8px 13px;
+      cursor:pointer; transition:background 0.15s; border-bottom:1px solid rgba(255,255,255,0.04);
+      user-select:none;
+    }
+    .layer-row:hover { background:rgba(0,200,255,0.07); }
+    .layer-row.off { opacity:0.3; }
+    .dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .lname { font-size:13px; font-weight:500; flex:1; }
+    .lcount { font-size:10px; font-family:'Share Tech Mono',monospace; color:var(--muted); }
+
+    /* STATS */
+    #stats {
+      position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+      display:flex; gap:0;
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:10px; overflow:hidden; z-index:900; backdrop-filter:blur(14px);
+    }
+    .sbox { padding:8px 18px; text-align:center; border-right:1px solid var(--border); }
+    .sbox:last-child { border-right:none; }
+    .snum { font-size:20px; font-weight:700; font-family:'Share Tech Mono',monospace; color:var(--accent); line-height:1; }
+    .slbl { font-size:9px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-top:2px; }
+
+    /* BASEMAP BTN */
+    #bmap-btn {
+      position:absolute; top:62px; right:12px;
+      background:var(--panel); border:1px solid var(--border); border-radius:8px;
+      padding:7px 13px; color:var(--accent); font-family:'Rajdhani',sans-serif;
+      font-size:12px; font-weight:600; letter-spacing:1px; cursor:pointer; z-index:900;
+      transition:background 0.2s;
+    }
+    #bmap-btn:hover { background:rgba(0,200,255,0.1); }
+
+    /* SEARCH BOX */
+    #search-box {
+      position:absolute; top:62px; left:50%; transform:translateX(-50%);
+      background:var(--panel); border:1px solid var(--border); border-radius:8px;
+      display:flex; align-items:center; gap:8px; padding:0 12px; z-index:900;
+      backdrop-filter:blur(12px);
+    }
+    #search-box input {
+      background:transparent; border:none; outline:none; color:var(--text);
+      font-family:'Rajdhani',sans-serif; font-size:13px; padding:8px 0; width:200px;
+    }
+    #search-box input::placeholder { color:var(--muted); }
+    #search-icon { color:var(--muted); font-size:13px; }
+
+    /* POPUP */
+    .maplibregl-popup-content {
+      background:rgba(8,13,30,0.97) !important; border:1px solid var(--border) !important;
+      border-radius:8px !important; color:var(--text) !important;
+      font-family:'Rajdhani',sans-serif !important; padding:12px 14px !important;
+      font-size:13px !important; max-width:250px !important; box-shadow:0 4px 30px rgba(0,0,0,0.5) !important;
+    }
+    .maplibregl-popup-tip { display:none !important; }
+    .p-title { font-weight:700; font-size:14px; color:var(--accent); margin-bottom:7px; text-transform:uppercase; letter-spacing:1px; }
+    .p-row { display:flex; justify-content:space-between; gap:8px; margin:2px 0; }
+    .p-key { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+    .p-val { font-family:'Share Tech Mono',monospace; font-size:11px; text-align:right; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* LOADING */
+    #loading {
+      position:absolute; inset:0; background:var(--bg);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      z-index:9999; gap:14px; transition:opacity 0.6s;
+    }
+    #loading.gone { opacity:0; pointer-events:none; }
+    .ring { width:50px; height:50px; border:3px solid rgba(0,200,255,0.12); border-top-color:var(--accent); border-radius:50%; animation:spin 0.85s linear infinite; }
+    @keyframes spin { to{ transform:rotate(360deg); } }
+    .lmsg { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--muted); letter-spacing:2px; }
+    .maplibregl-ctrl-bottom-right { bottom:52px !important; }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="ring"></div>
+  <div class="lmsg" id="lmsg">CONNECTING TO DATABASE...</div>
+</div>
+
+<div id="header">
+  <div class="logo">ULUNDI <span>FIBER</span></div>
+  <div class="tagline">Network Operations Map</div>
+  <div class="hspacer"></div>
+  <div id="coord-display">LAT — &nbsp; LNG —</div>
+  <div id="live-pill"><div id="live-dot"></div><span id="live-txt">CONNECTING</span></div>
+</div>
+
+<div id="map"></div>
+
+<div id="panel">
+  <div class="panel-hdr"><span>LAYERS</span><span id="layer-count-hdr">0 loaded</span></div>
+  <div id="layer-list"></div>
+</div>
+
+<div id="search-box">
+  <span id="search-icon">🔍</span>
+  <input id="search-input" type="text" placeholder="Search street or place..." />
+</div>
+
+<button id="bmap-btn" onclick="toggleBasemap()">🛰 SATELLITE</button>
+
+<div id="stats">
+  <div class="sbox"><div class="snum" id="s-erven">—</div><div class="slbl">Properties</div></div>
+  <div class="sbox"><div class="snum" id="s-routes">—</div><div class="slbl">Route Segments</div></div>
+  <div class="sbox"><div class="snum" id="s-poles">—</div><div class="slbl">Poles</div></div>
+  <div class="sbox"><div class="snum" id="s-manholes">—</div><div class="slbl">Manholes</div></div>
+  <div class="sbox"><div class="snum" id="s-houses">—</div><div class="slbl">Houses</div></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//   UPDATE THESE TWO VALUES WITH YOUR SUPABASE
+// ════════════════════════════════════════════════
+const SUPABASE_URL  = 'https://YOUR_PROJECT_REF.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY_HERE';
+// ════════════════════════════════════════════════
+
+const LAYERS = [
+  { id:'erven',    table:'erven',      label:'Property Boundaries', color:'#00c8ff', type:'polygon', stat:'s-erven'    },
+  { id:'routes',   table:'d_s',        label:'Fiber Routes',        color:'#00ff99', type:'line',    stat:'s-routes'   },
+  { id:'poles',    table:'d_poles',    label:'Poles',               color:'#ffd700', type:'point',   stat:'s-poles'    },
+  { id:'manholes', table:'d_manwhole', label:'Manholes',            color:'#ff4d6d', type:'point',   stat:'s-manholes' },
+  { id:'houses',   table:'d_houses',   label:'Houses / Drops',      color:'#c084fc', type:'point',   stat:'s-houses'   },
+];
+
+const MAPS = {
+  satellite: { next:'streets',  btnLabel:'🗺 STREETS',   tiles:'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', attr:'© Google' },
+  streets:   { next:'satellite',btnLabel:'🛰 SATELLITE', tiles:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',       attr:'© OSM contributors' },
+};
+let basemap = 'satellite';
+let map, popup;
+let cache = {};
+let vis = new Set(LAYERS.map(l=>l.id));
+
+async function apiFetch(table) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+    headers:{ 'apikey':SUPABASE_ANON, 'Authorization':`Bearer ${SUPABASE_ANON}`, 'Accept':'application/geo+json' }
+  });
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return r.json();
+}
+
+function buildStyle(base) {
+  return { version:8, sources:{ base:{ type:'raster', tiles:[MAPS[base].tiles], tileSize:256, attribution:MAPS[base].attr }}, layers:[{ id:'base', type:'raster', source:'base' }] };
+}
+
+function addLayer(l, geojson) {
+  if (map.getSource(l.id)) map.removeSource(l.id);
+  map.addSource(l.id, { type:'geojson', data:geojson });
+
+  if (l.type === 'polygon') {
+    map.addLayer({ id:l.id+'-fill', type:'fill', source:l.id, paint:{ 'fill-color':l.color, 'fill-opacity':0.07 }});
+    map.addLayer({ id:l.id+'-line', type:'line', source:l.id, paint:{ 'line-color':l.color, 'line-width':1.2, 'line-opacity':0.85 }});
+    map.on('click', l.id+'-fill', e => showPopup(e.lngLat, e.features[0].properties, l));
+  } else if (l.type === 'line') {
+    map.addLayer({ id:l.id, type:'line', source:l.id, paint:{ 'line-color':l.color, 'line-width':2.2, 'line-opacity':0.9 }});
+    map.on('click', l.id, e => showPopup(e.lngLat, e.features[0].properties, l));
+    map.on('mouseenter', l.id, () => map.getCanvas().style.cursor='pointer');
+    map.on('mouseleave', l.id, () => map.getCanvas().style.cursor='');
+  } else {
+    map.addLayer({ id:l.id, type:'circle', source:l.id, paint:{
+      'circle-color':l.color,
+      'circle-radius':['interpolate',['linear'],['zoom'],12,3,17,7],
+      'circle-stroke-color':'#fff', 'circle-stroke-width':1, 'circle-opacity':0.95
+    }});
+    map.on('click', l.id, e => showPopup(e.lngLat, e.features[0].properties, l));
+    map.on('mouseenter', l.id, () => map.getCanvas().style.cursor='pointer');
+    map.on('mouseleave', l.id, () => map.getCanvas().style.cursor='');
+  }
+}
+
+function showPopup(lnglat, props, layer) {
+  const skip = ['geom','geometry','wkb_geometry','ogc_fid','the_geom'];
+  const rows = Object.entries(props)
+    .filter(([k]) => !skip.includes(k.toLowerCase()) && props[k] !== null && props[k] !== '')
+    .slice(0, 10)
+    .map(([k,v]) => `<div class="p-row"><span class="p-key">${k}</span><span class="p-val">${v}</span></div>`)
+    .join('');
+  popup.setLngLat(lnglat)
+    .setHTML(`<div class="p-title">${layer.label}</div>${rows || '<div style="color:var(--muted);font-size:11px">No attributes</div>'}`)
+    .addTo(map);
+}
+
+function buildPanel(loadedCount) {
+  const list = document.getElementById('layer-list');
+  list.innerHTML = '';
+  document.getElementById('layer-count-hdr').textContent = `${loadedCount} loaded`;
+  LAYERS.forEach(l => {
+    const cnt = cache[l.id]?.features?.length ?? '—';
+    const row = document.createElement('div');
+    row.className = 'layer-row'; row.id = 'row-'+l.id;
+    row.innerHTML = `
+      <div class="dot" style="background:${l.color};box-shadow:0 0 6px ${l.color}66"></div>
+      <span class="lname">${l.label}</span>
+      <span class="lcount">${typeof cnt==='number' ? cnt.toLocaleString() : cnt}</span>
+    `;
+    row.onclick = () => toggleVis(l);
+    list.appendChild(row);
+  });
+}
+
+function toggleVis(l) {
+  const row = document.getElementById('row-'+l.id);
+  if (vis.has(l.id)) {
+    vis.delete(l.id); row.classList.add('off');
+    const ids = l.type==='polygon' ? [l.id+'-fill',l.id+'-line'] : [l.id];
+    ids.forEach(id => { if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','none'); });
+  } else {
+    vis.add(l.id); row.classList.remove('off');
+    const ids = l.type==='polygon' ? [l.id+'-fill',l.id+'-line'] : [l.id];
+    ids.forEach(id => { if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','visible'); });
+  }
+}
+
+function toggleBasemap() {
+  const nxt = MAPS[basemap].next;
+  document.getElementById('bmap-btn').textContent = MAPS[nxt].btnLabel;
+  map.setStyle(buildStyle(nxt));
+  map.once('styledata', () => LAYERS.forEach(l => { if(cache[l.id]) addLayer(l, cache[l.id]); }));
+  basemap = nxt;
+}
+
+// Nominatim geocoder for search
+document.getElementById('search-input').addEventListener('keydown', async e => {
+  if (e.key !== 'Enter') return;
+  const q = e.target.value.trim();
+  if (!q) return;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Ulundi, South Africa')}&format=json&limit=1`);
+    const d = await r.json();
+    if (d.length) {
+      map.flyTo({ center:[+d[0].lon, +d[0].lat], zoom:16, duration:1200 });
+    }
+  } catch {}
+});
+
+async function init() {
+  map = new maplibregl.Map({
+    container:'map', style:buildStyle('satellite'),
+    center:[31.4162, -28.3191], zoom:14, attributionControl:false
+  });
+  popup = new maplibregl.Popup({ closeButton:true, maxWidth:'260px' });
+  map.addControl(new maplibregl.NavigationControl(),'bottom-right');
+  map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-left');
+
+  // Coordinate tracker
+  map.on('mousemove', e => {
+    document.getElementById('coord-display').textContent =
+      `LAT ${e.lngLat.lat.toFixed(5)}  LNG ${e.lngLat.lng.toFixed(5)}`;
+  });
+
+  map.on('load', async () => {
+    let ok = 0;
+    for (const l of LAYERS) {
+      document.getElementById('lmsg').textContent = `LOADING ${l.label.toUpperCase()}...`;
+      try {
+        const gj = await apiFetch(l.table);
+        cache[l.id] = gj;
+        addLayer(l, gj);
+        const cnt = gj.features?.length ?? 0;
+        const el = document.getElementById(l.stat);
+        if (el) el.textContent = cnt.toLocaleString();
+        ok++;
+      } catch(err) {
+        console.warn(`Failed: ${l.table}`, err.message);
+        const el = document.getElementById(l.stat);
+        if (el) { el.textContent = 'N/A'; el.style.color='var(--red)'; }
+      }
+    }
+    buildPanel(ok);
+    document.getElementById('live-txt').textContent = `LIVE · ${ok}/${LAYERS.length}`;
+    document.getElementById('loading').classList.add('gone');
+  });
+}
+
+init();
+</script>
+</body>
+</html>
