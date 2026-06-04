@@ -1,370 +1,529 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ulundi Fiber Network</title>
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg:     #080d18;
-      --panel:  rgba(8,13,24,0.90);
-      --border: rgba(0,200,255,0.18);
-      --accent: #00c8ff;
-      --green:  #00ff99;
-      --warn:   #ffd700;
-      --red:    #ff4d6d;
-      --text:   #cce8f4;
-      --muted:  #5d7a8a;
+    :root{
+      --bg:#07101f; --panel:rgba(7,16,31,0.93); --border:rgba(0,195,255,0.18);
+      --accent:#00c8ff; --green:#00ff99; --warn:#ffd700; --red:#ff4d6d;
+      --purple:#c084fc; --text:#cce8f4; --muted:#4d6a7a; --hover:rgba(0,195,255,0.09);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Rajdhani',sans-serif; background:var(--bg); color:var(--text); overflow:hidden; }
-    #map { width:100vw; height:100vh; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+    #map{width:100vw;height:100vh}
 
-    /* HEADER */
-    #header {
-      position:absolute; top:0; left:0; right:0; height:52px;
-      background:linear-gradient(90deg,rgba(0,10,30,0.97),rgba(0,30,55,0.92));
+    /* ── HEADER ── */
+    #hdr{
+      position:absolute;top:0;left:0;right:0;height:50px;
+      background:linear-gradient(90deg,rgba(2,8,22,.97),rgba(0,28,55,.93));
       border-bottom:1px solid var(--border);
-      display:flex; align-items:center; padding:0 18px; gap:14px;
-      z-index:1000; backdrop-filter:blur(12px);
+      display:flex;align-items:center;padding:0 16px;gap:12px;
+      z-index:1000;backdrop-filter:blur(14px)
     }
-    .logo { font-size:19px; font-weight:700; letter-spacing:2px; color:var(--accent); text-transform:uppercase; }
-    .logo span { color:var(--green); }
-    .tagline { font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; font-family:'Share Tech Mono',monospace; }
-    .hspacer { flex:1; }
-    #coord-display {
-      font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted);
-      background:rgba(0,0,0,0.3); padding:4px 10px; border-radius:4px; border:1px solid var(--border);
-    }
-    #live-pill {
-      display:flex; align-items:center; gap:7px;
-      background:rgba(0,200,100,0.08); border:1px solid rgba(0,255,150,0.25);
-      border-radius:20px; padding:4px 12px; font-size:11px; font-family:'Share Tech Mono',monospace;
-    }
-    #live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 2s infinite; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .logo{font-size:18px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
+    .logo b{color:var(--green)}
+    .sub{font-size:10px;color:var(--muted);letter-spacing:1.5px;font-family:'Share Tech Mono',monospace}
+    .hsp{flex:1}
+    #coord{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);
+      background:rgba(0,0,0,.35);padding:3px 9px;border-radius:4px;border:1px solid var(--border)}
+    #pill{display:flex;align-items:center;gap:6px;background:rgba(0,200,100,.07);
+      border:1px solid rgba(0,255,150,.22);border-radius:20px;padding:3px 11px;
+      font-size:10px;font-family:'Share Tech Mono',monospace}
+    #dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+      box-shadow:0 0 7px var(--green);animation:blink 2s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-    /* LAYER PANEL */
-    #panel {
-      position:absolute; top:62px; left:12px; width:228px;
-      background:var(--panel); border:1px solid var(--border);
-      border-radius:10px; backdrop-filter:blur(16px); z-index:900; overflow:hidden;
+    /* ── SIDE PANEL ── */
+    #panel{
+      position:absolute;top:60px;left:10px;width:240px;
+      background:var(--panel);border:1px solid var(--border);
+      border-radius:10px;backdrop-filter:blur(18px);z-index:900;
+      display:flex;flex-direction:column;max-height:calc(100vh - 130px);
     }
-    .panel-hdr {
-      padding:9px 14px; font-size:10px; font-family:'Share Tech Mono',monospace;
-      letter-spacing:2px; color:var(--muted); text-transform:uppercase;
-      border-bottom:1px solid var(--border); display:flex; justify-content:space-between;
+    .ph{
+      padding:9px 13px;font-size:9px;font-family:'Share Tech Mono',monospace;
+      letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+      border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;
+      flex-shrink:0
     }
-    .layer-row {
-      display:flex; align-items:center; gap:9px; padding:8px 13px;
-      cursor:pointer; transition:background 0.15s; border-bottom:1px solid rgba(255,255,255,0.04);
-      user-select:none;
-    }
-    .layer-row:hover { background:rgba(0,200,255,0.07); }
-    .layer-row.off { opacity:0.3; }
-    .dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
-    .lname { font-size:13px; font-weight:500; flex:1; }
-    .lcount { font-size:10px; font-family:'Share Tech Mono',monospace; color:var(--muted); }
+    #layer-scroll{overflow-y:auto;flex:1}
+    #layer-scroll::-webkit-scrollbar{width:3px}
+    #layer-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-    /* STATS */
-    #stats {
-      position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
-      display:flex; gap:0;
-      background:var(--panel); border:1px solid var(--border);
-      border-radius:10px; overflow:hidden; z-index:900; backdrop-filter:blur(14px);
+    .section-hdr{
+      padding:6px 13px 4px;font-size:9px;font-family:'Share Tech Mono',monospace;
+      letter-spacing:1.5px;color:var(--accent);text-transform:uppercase;
+      border-top:1px solid var(--border);margin-top:2px
     }
-    .sbox { padding:8px 18px; text-align:center; border-right:1px solid var(--border); }
-    .sbox:last-child { border-right:none; }
-    .snum { font-size:20px; font-weight:700; font-family:'Share Tech Mono',monospace; color:var(--accent); line-height:1; }
-    .slbl { font-size:9px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-top:2px; }
+    .lrow{
+      padding:7px 13px;border-bottom:1px solid rgba(255,255,255,.035);
+    }
+    .lrow.off .lname,.lrow.off .lcount{opacity:.35}
+    .lrow-top{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+    .lrow-top:hover{background:var(--hover);margin:-7px -13px;padding:7px 13px;border-radius:4px}
+    .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .lname{font-size:13px;font-weight:500;flex:1}
+    .lcount{font-size:9px;font-family:'Share Tech Mono',monospace;color:var(--muted)}
+    .eye{font-size:12px;cursor:pointer;opacity:.6;transition:opacity .15s}
+    .eye:hover{opacity:1}
 
-    /* BASEMAP BTN */
-    #bmap-btn {
-      position:absolute; top:62px; right:12px;
-      background:var(--panel); border:1px solid var(--border); border-radius:8px;
-      padding:7px 13px; color:var(--accent); font-family:'Rajdhani',sans-serif;
-      font-size:12px; font-weight:600; letter-spacing:1px; cursor:pointer; z-index:900;
-      transition:background 0.2s;
+    /* opacity + label controls */
+    .lrow-ctrl{display:flex;align-items:center;gap:8px;margin-top:5px;padding-left:16px}
+    .lrow-ctrl label{font-size:9px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+    .opslider{
+      flex:1;-webkit-appearance:none;height:2px;
+      background:var(--border);border-radius:2px;outline:none;cursor:pointer
     }
-    #bmap-btn:hover { background:rgba(0,200,255,0.1); }
+    .opslider::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;
+      border-radius:50%;background:var(--accent);cursor:pointer}
+    .lbl-btn{
+      font-size:9px;padding:2px 6px;border:1px solid var(--border);border-radius:3px;
+      color:var(--muted);cursor:pointer;font-family:'Share Tech Mono',monospace;
+      background:transparent;transition:all .15s;white-space:nowrap
+    }
+    .lbl-btn.on{color:var(--warn);border-color:var(--warn);background:rgba(255,215,0,.08)}
 
-    /* SEARCH BOX */
-    #search-box {
-      position:absolute; top:62px; left:50%; transform:translateX(-50%);
-      background:var(--panel); border:1px solid var(--border); border-radius:8px;
-      display:flex; align-items:center; gap:8px; padding:0 12px; z-index:900;
-      backdrop-filter:blur(12px);
+    /* ── SEARCH ── */
+    #search{
+      position:absolute;top:60px;left:50%;transform:translateX(-50%);
+      background:var(--panel);border:1px solid var(--border);border-radius:8px;
+      display:flex;align-items:center;gap:8px;padding:0 12px;z-index:900;backdrop-filter:blur(14px)
     }
-    #search-box input {
-      background:transparent; border:none; outline:none; color:var(--text);
-      font-family:'Rajdhani',sans-serif; font-size:13px; padding:8px 0; width:200px;
+    #search input{
+      background:transparent;border:none;outline:none;color:var(--text);
+      font-family:'Rajdhani',sans-serif;font-size:13px;padding:8px 0;width:210px
     }
-    #search-box input::placeholder { color:var(--muted); }
-    #search-icon { color:var(--muted); font-size:13px; }
+    #search input::placeholder{color:var(--muted)}
+    #search-icon{color:var(--muted);font-size:13px}
 
-    /* POPUP */
-    .maplibregl-popup-content {
-      background:rgba(8,13,30,0.97) !important; border:1px solid var(--border) !important;
-      border-radius:8px !important; color:var(--text) !important;
-      font-family:'Rajdhani',sans-serif !important; padding:12px 14px !important;
-      font-size:13px !important; max-width:250px !important; box-shadow:0 4px 30px rgba(0,0,0,0.5) !important;
+    /* ── BASEMAP BTN ── */
+    #bmap{
+      position:absolute;top:60px;right:10px;
+      background:var(--panel);border:1px solid var(--border);border-radius:8px;
+      padding:7px 13px;color:var(--accent);font-family:'Rajdhani',sans-serif;
+      font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;z-index:900;
+      transition:background .2s
     }
-    .maplibregl-popup-tip { display:none !important; }
-    .p-title { font-weight:700; font-size:14px; color:var(--accent); margin-bottom:7px; text-transform:uppercase; letter-spacing:1px; }
-    .p-row { display:flex; justify-content:space-between; gap:8px; margin:2px 0; }
-    .p-key { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
-    .p-val { font-family:'Share Tech Mono',monospace; font-size:11px; text-align:right; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    #bmap:hover{background:rgba(0,200,255,.1)}
 
-    /* LOADING */
-    #loading {
-      position:absolute; inset:0; background:var(--bg);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      z-index:9999; gap:14px; transition:opacity 0.6s;
+    /* ── STATS ── */
+    #stats{
+      position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+      display:flex;background:var(--panel);border:1px solid var(--border);
+      border-radius:10px;overflow:hidden;z-index:900;backdrop-filter:blur(14px)
     }
-    #loading.gone { opacity:0; pointer-events:none; }
-    .ring { width:50px; height:50px; border:3px solid rgba(0,200,255,0.12); border-top-color:var(--accent); border-radius:50%; animation:spin 0.85s linear infinite; }
-    @keyframes spin { to{ transform:rotate(360deg); } }
-    .lmsg { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--muted); letter-spacing:2px; }
-    .maplibregl-ctrl-bottom-right { bottom:52px !important; }
+    .sb{padding:7px 15px;text-align:center;border-right:1px solid var(--border)}
+    .sb:last-child{border-right:none}
+    .sn{font-size:18px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--accent);line-height:1}
+    .sl{font-size:8px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-top:2px}
+
+    /* ── POPUP ── */
+    .maplibregl-popup-content{
+      background:rgba(7,16,31,.97)!important;border:1px solid var(--border)!important;
+      border-radius:8px!important;color:var(--text)!important;
+      font-family:'Rajdhani',sans-serif!important;padding:12px 14px!important;
+      font-size:13px!important;max-width:260px!important;
+      box-shadow:0 6px 30px rgba(0,0,0,.6)!important
+    }
+    .maplibregl-popup-tip{display:none!important}
+    .pt{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:7px;
+      text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);padding-bottom:6px}
+    .pr{display:flex;justify-content:space-between;gap:8px;margin:3px 0}
+    .pk{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+    .pv{font-family:'Share Tech Mono',monospace;font-size:11px;text-align:right;
+      max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* ── LOADING ── */
+    #loading{
+      position:absolute;inset:0;background:var(--bg);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      z-index:9999;gap:14px;transition:opacity .5s
+    }
+    #loading.gone{opacity:0;pointer-events:none}
+    .ring{width:48px;height:48px;border:3px solid rgba(0,200,255,.12);
+      border-top-color:var(--accent);border-radius:50%;animation:spin .85s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .lm{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px}
+    .maplibregl-ctrl-bottom-right{bottom:50px!important}
   </style>
 </head>
 <body>
 
-<div id="loading">
-  <div class="ring"></div>
-  <div class="lmsg" id="lmsg">CONNECTING TO DATABASE...</div>
-</div>
+<div id="loading"><div class="ring"></div><div class="lm" id="lm">CONNECTING...</div></div>
 
-<div id="header">
-  <div class="logo">ULUNDI <span>FIBER</span></div>
-  <div class="tagline">Network Operations Map</div>
-  <div class="hspacer"></div>
-  <div id="coord-display">LAT — &nbsp; LNG —</div>
-  <div id="live-pill"><div id="live-dot"></div><span id="live-txt">CONNECTING</span></div>
+<!-- Header -->
+<div id="hdr">
+  <div class="logo">ULUNDI <b>FIBER</b></div>
+  <div class="sub">Network Operations Map</div>
+  <div class="hsp"></div>
+  <div id="coord">LAT — &nbsp; LNG —</div>
+  <div id="pill"><div id="dot"></div><span id="ptxt">CONNECTING</span></div>
 </div>
 
 <div id="map"></div>
 
+<!-- Panel -->
 <div id="panel">
-  <div class="panel-hdr"><span>LAYERS</span><span id="layer-count-hdr">0 loaded</span></div>
-  <div id="layer-list"></div>
+  <div class="ph"><span>LAYERS &amp; OVERLAYS</span><span id="lc">0</span></div>
+  <div id="layer-scroll"><div id="layer-list"></div></div>
 </div>
 
-<div id="search-box">
+<!-- Search -->
+<div id="search">
   <span id="search-icon">🔍</span>
-  <input id="search-input" type="text" placeholder="Search street or place..." />
+  <input id="si" type="text" placeholder="Search address or place…"/>
 </div>
 
-<button id="bmap-btn" onclick="toggleBasemap()">🛰 SATELLITE</button>
+<button id="bmap" onclick="toggleBasemap()">🛰 SATELLITE</button>
 
+<!-- Stats -->
 <div id="stats">
-  <div class="sbox"><div class="snum" id="s-erven">—</div><div class="slbl">Properties</div></div>
-  <div class="sbox"><div class="snum" id="s-routes">—</div><div class="slbl">Route Segments</div></div>
-  <div class="sbox"><div class="snum" id="s-poles">—</div><div class="slbl">Poles</div></div>
-  <div class="sbox"><div class="snum" id="s-manholes">—</div><div class="slbl">Manholes</div></div>
-  <div class="sbox"><div class="snum" id="s-houses">—</div><div class="slbl">Houses</div></div>
+  <div class="sb"><div class="sn" id="st-erven">—</div><div class="sl">Properties</div></div>
+  <div class="sb"><div class="sn" id="st-routes">—</div><div class="sl">Fiber Segments</div></div>
+  <div class="sb"><div class="sn" id="st-poles">—</div><div class="sl">Poles</div></div>
+  <div class="sb"><div class="sn" id="st-manholes">—</div><div class="sl">Manholes</div></div>
+  <div class="sb"><div class="sn" id="st-houses">—</div><div class="sl">Houses</div></div>
 </div>
 
 <script>
 // ════════════════════════════════════════════════
-//   UPDATE THESE TWO VALUES WITH YOUR SUPABASE
+//  UPDATE THESE WITH YOUR SUPABASE DETAILS
 // ════════════════════════════════════════════════
-const SUPABASE_URL  = 'https://zglgruixqkgytutcforw.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGdydWl4cWtneXR1dGNmb3J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTY0MzQsImV4cCI6MjA5NTk3MjQzNH0.Q8k-H-4_KdqkfYTa97P8-EZjQ93S35WZWAN4K7X2wx0';
+const SUPABASE_URL  = 'https://YOUR_PROJECT_REF.supabase.co';
+const SUPABASE_ANON = 'YOUR_ANON_KEY_HERE';
 // ════════════════════════════════════════════════
 
-const LAYERS = [
-  { id:'erven',    table:'erven',      label:'Property Boundaries', color:'#00c8ff', type:'polygon', stat:'s-erven'    },
-  { id:'routes',   table:'d_s',        label:'Fiber Routes',        color:'#00ff99', type:'line',    stat:'s-routes'   },
-  { id:'poles',    table:'d_poles',    label:'Poles',               color:'#ffd700', type:'point',   stat:'s-poles'    },
-  { id:'manholes', table:'d_manwhole', label:'Manholes',            color:'#ff4d6d', type:'point',   stat:'s-manholes' },
-  { id:'houses',   table:'d_houses',   label:'Houses / Drops',      color:'#c084fc', type:'point',   stat:'s-houses'   },
+// CSG MapServer tile URL (ArcGIS REST — public government service)
+const CSG_TILES = 'https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/tile/{z}/{y}/{x}';
+
+// ── Layer Definitions ──
+// labelField: column names to try for labels (first match wins)
+const FIBER_LAYERS = [
+  { id:'erven',    table:'erven',       label:'Erven (Properties)', color:'#00c8ff', type:'polygon',
+    stat:'st-erven',   labelField:['erf_no','erf_number','parcel_no','name','ogc_fid'], labelMinZoom:15 },
+  { id:'routes',   table:'d_s',         label:'Fiber Routes',       color:'#00ff99', type:'line',
+    stat:'st-routes',  labelField:['cable_name','name','cable_id','route_name','id'],   labelMinZoom:15 },
+  { id:'poles',    table:'d_poles',     label:'Poles',              color:'#ffd700', type:'point',
+    stat:'st-poles',   labelField:['pole_no','pole_id','pole_num','name','id'],         labelMinZoom:16 },
+  { id:'manholes', table:'d_manwhole',  label:'Manholes',           color:'#ff4d6d', type:'point',
+    stat:'st-manholes',labelField:['mh_no','mh_id','manhole_no','name','id'],           labelMinZoom:16 },
+  { id:'houses',   table:'d_houses',    label:'Houses / Drops',     color:'#c084fc', type:'point',
+    stat:'st-houses',  labelField:['house_no','stand_no','address','name','id'],        labelMinZoom:17 },
 ];
 
-const TABLES = {
-  vw_poles: {
-    color: '#00e5ff',
-    type: 'point',
-    label: 'Pole'
-  },
+const OVERLAY_LAYERS = [
+  { id:'csg', label:'CSG Cadastral', color:'#f97316', type:'raster-overlay',
+    tiles: CSG_TILES, defaultOpacity:0.6 },
+];
 
-  vw_manholes: {
-    color: '#ff6b35',
-    type: 'point',
-    label: 'Manhole'
-  },
+const ALL_LAYERS = [...FIBER_LAYERS, ...OVERLAY_LAYERS];
 
-  vw_houses: {
-    color: '#ffff00',
-    type: 'point',
-    label: 'House'
-  },
-
-  vw_48f: {
-    color: '#00ff88',
-    type: 'line',
-    label: '48F Fiber'
-  },
-
-  vw_144f: {
-    color: '#00cc66',
-    type: 'line',
-    label: '144F Fiber'
-  }
-};
-
-const MAPS = {
-  satellite: { next:'streets',  btnLabel:'🗺 STREETS',   tiles:'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', attr:'© Google' },
-  streets:   { next:'satellite',btnLabel:'🛰 SATELLITE', tiles:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',       attr:'© OSM contributors' },
+const BASEMAPS = {
+  satellite:{ next:'streets', btn:'🗺 STREETS',   tile:'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', attr:'© Google' },
+  streets:{   next:'satellite',btn:'🛰 SATELLITE', tile:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',      attr:'© OSM' },
 };
 let basemap = 'satellite';
 let map, popup;
 let cache = {};
-let vis = new Set(LAYERS.map(l=>l.id));
+let layerState = {}; // { id: { visible, opacity, labelsOn } }
+
+function baseStyle(bm) {
+  const b = BASEMAPS[bm];
+  return { version:8, sources:{ base:{ type:'raster', tiles:[b.tile], tileSize:256, attribution:b.attr }}, layers:[{ id:'base', type:'raster', source:'base' }] };
+}
 
 async function apiFetch(table) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
     headers:{ 'apikey':SUPABASE_ANON, 'Authorization':`Bearer ${SUPABASE_ANON}`, 'Accept':'application/geo+json' }
   });
-  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  if (!r.ok) throw new Error(`${r.status}`);
   return r.json();
 }
 
-function buildStyle(base) {
-  return { version:8, sources:{ base:{ type:'raster', tiles:[MAPS[base].tiles], tileSize:256, attribution:MAPS[base].attr }}, layers:[{ id:'base', type:'raster', source:'base' }] };
+// Resolve label field from a list of candidates against actual feature properties
+function resolveLabelField(candidates, sampleProps) {
+  if (!sampleProps) return null;
+  for (const f of candidates) {
+    if (f in sampleProps) return f;
+  }
+  return null;
 }
 
-function addLayer(l, geojson) {
+function labelExpr(field) {
+  return ['to-string', ['get', field]];
+}
+
+function addFiberLayer(l, geojson) {
   if (map.getSource(l.id)) map.removeSource(l.id);
   map.addSource(l.id, { type:'geojson', data:geojson });
+  const op = layerState[l.id].opacity;
 
   if (l.type === 'polygon') {
-    map.addLayer({ id:l.id+'-fill', type:'fill', source:l.id, paint:{ 'fill-color':l.color, 'fill-opacity':0.07 }});
-    map.addLayer({ id:l.id+'-line', type:'line', source:l.id, paint:{ 'line-color':l.color, 'line-width':1.2, 'line-opacity':0.85 }});
+    map.addLayer({ id:l.id+'-fill', type:'fill', source:l.id,
+      paint:{ 'fill-color':l.color, 'fill-opacity':op * 0.09 }});
+    map.addLayer({ id:l.id+'-line', type:'line', source:l.id,
+      paint:{ 'line-color':l.color, 'line-width':1.3, 'line-opacity':op * 0.9 }});
+    map.addLayer({ id:l.id+'-hover', type:'fill', source:l.id,
+      paint:{ 'fill-color':l.color, 'fill-opacity':0.25 },
+      filter:['==','ogc_fid',''] });
     map.on('click', l.id+'-fill', e => showPopup(e.lngLat, e.features[0].properties, l));
+    map.on('mousemove', l.id+'-fill', e => {
+      map.getCanvas().style.cursor='pointer';
+      map.setFilter(l.id+'-hover',['==','ogc_fid', e.features[0].properties.ogc_fid ?? '']);
+    });
+    map.on('mouseleave', l.id+'-fill', () => {
+      map.getCanvas().style.cursor='';
+      map.setFilter(l.id+'-hover',['==','ogc_fid','']);
+    });
   } else if (l.type === 'line') {
-    map.addLayer({ id:l.id, type:'line', source:l.id, paint:{ 'line-color':l.color, 'line-width':2.2, 'line-opacity':0.9 }});
+    map.addLayer({ id:l.id, type:'line', source:l.id,
+      paint:{ 'line-color':l.color, 'line-width':2.5, 'line-opacity':op,
+              'line-gap-width':0 }});
+    map.addLayer({ id:l.id+'-hover', type:'line', source:l.id,
+      paint:{ 'line-color':'#ffffff', 'line-width':4, 'line-opacity':0 },
+      filter:['==','id',''] });
     map.on('click', l.id, e => showPopup(e.lngLat, e.features[0].properties, l));
     map.on('mouseenter', l.id, () => map.getCanvas().style.cursor='pointer');
     map.on('mouseleave', l.id, () => map.getCanvas().style.cursor='');
   } else {
-    map.addLayer({ id:l.id, type:'circle', source:l.id, paint:{
-      'circle-color':l.color,
-      'circle-radius':['interpolate',['linear'],['zoom'],12,3,17,7],
-      'circle-stroke-color':'#fff', 'circle-stroke-width':1, 'circle-opacity':0.95
-    }});
+    map.addLayer({ id:l.id, type:'circle', source:l.id,
+      paint:{
+        'circle-color':l.color,
+        'circle-radius':['interpolate',['linear'],['zoom'],12,3,16,6,19,10],
+        'circle-stroke-color':'#111','circle-stroke-width':1.2,'circle-opacity':op
+      }});
     map.on('click', l.id, e => showPopup(e.lngLat, e.features[0].properties, l));
     map.on('mouseenter', l.id, () => map.getCanvas().style.cursor='pointer');
     map.on('mouseleave', l.id, () => map.getCanvas().style.cursor='');
   }
+
+  // Add label layer (off by default, toggled by user)
+  const sample = geojson.features?.[0]?.properties;
+  const field = resolveLabelField(l.labelField, sample);
+  if (field) {
+    const labelLayout = {
+      'text-field': labelExpr(field),
+      'text-font':['Open Sans Regular','Arial Unicode MS Regular'],
+      'text-size':['interpolate',['linear'],['zoom'],14,10,18,13],
+      'text-allow-overlap':false,
+      'text-ignore-placement':false,
+    };
+    if (l.type === 'line') {
+      labelLayout['symbol-placement'] = 'line';
+      labelLayout['text-offset'] = [0, 0.8];
+    } else if (l.type !== 'polygon') {
+      labelLayout['text-offset'] = [0, 1.4];
+      labelLayout['text-anchor'] = 'top';
+    }
+    map.addLayer({
+      id:l.id+'-label', type:'symbol', source:l.id,
+      minzoom: l.labelMinZoom ?? 15,
+      layout:{ ...labelLayout, 'visibility': layerState[l.id].labelsOn ? 'visible' : 'none' },
+      paint:{ 'text-color':l.color, 'text-halo-color':'rgba(0,0,0,0.85)', 'text-halo-width':1.5 }
+    });
+  }
+}
+
+function addRasterOverlay(l) {
+  if (map.getSource(l.id)) map.removeSource(l.id);
+  map.addSource(l.id, { type:'raster', tiles:[l.tiles], tileSize:256,
+    attribution:'© CSG / DRDLR South Africa' });
+  map.addLayer({ id:l.id, type:'raster', source:l.id,
+    paint:{ 'raster-opacity': layerState[l.id].visible ? layerState[l.id].opacity : 0 }
+  });
 }
 
 function showPopup(lnglat, props, layer) {
   const skip = ['geom','geometry','wkb_geometry','ogc_fid','the_geom'];
   const rows = Object.entries(props)
-    .filter(([k]) => !skip.includes(k.toLowerCase()) && props[k] !== null && props[k] !== '')
-    .slice(0, 10)
-    .map(([k,v]) => `<div class="p-row"><span class="p-key">${k}</span><span class="p-val">${v}</span></div>`)
+    .filter(([k,v]) => !skip.includes(k.toLowerCase()) && v !== null && v !== '')
+    .slice(0,12)
+    .map(([k,v]) => `<div class="pr"><span class="pk">${k}</span><span class="pv" title="${v}">${v}</span></div>`)
     .join('');
   popup.setLngLat(lnglat)
-    .setHTML(`<div class="p-title">${layer.label}</div>${rows || '<div style="color:var(--muted);font-size:11px">No attributes</div>'}`)
+    .setHTML(`<div class="pt">${layer.label}</div>${rows||'<div style="color:var(--muted);font-size:11px">No attributes</div>'}`)
     .addTo(map);
+}
+
+function setVisibility(l, visible) {
+  layerState[l.id].visible = visible;
+  const ids = l.type==='polygon' ? [l.id+'-fill',l.id+'-line',l.id+'-hover']
+            : l.type==='raster-overlay' ? []
+            : [l.id];
+  ids.forEach(id => {
+    if (map.getLayer(id)) map.setLayoutProperty(id,'visibility', visible ? 'visible' : 'none');
+  });
+  if (l.type === 'raster-overlay') {
+    if (map.getLayer(l.id)) map.setPaintProperty(l.id,'raster-opacity', visible ? layerState[l.id].opacity : 0);
+  }
+  if (map.getLayer(l.id+'-label')) {
+    map.setLayoutProperty(l.id+'-label','visibility', (visible && layerState[l.id].labelsOn) ? 'visible' : 'none');
+  }
+}
+
+function setOpacity(l, op) {
+  layerState[l.id].opacity = op;
+  if (!layerState[l.id].visible) return;
+  if (l.type === 'polygon') {
+    if (map.getLayer(l.id+'-fill')) map.setPaintProperty(l.id+'-fill','fill-opacity', op * 0.09);
+    if (map.getLayer(l.id+'-line')) map.setPaintProperty(l.id+'-line','line-opacity', op * 0.9);
+  } else if (l.type === 'line') {
+    if (map.getLayer(l.id)) map.setPaintProperty(l.id,'line-opacity',op);
+  } else if (l.type === 'point') {
+    if (map.getLayer(l.id)) map.setPaintProperty(l.id,'circle-opacity',op);
+  } else if (l.type === 'raster-overlay') {
+    if (map.getLayer(l.id)) map.setPaintProperty(l.id,'raster-opacity',op);
+  }
+}
+
+function toggleLabels(l) {
+  layerState[l.id].labelsOn = !layerState[l.id].labelsOn;
+  const v = layerState[l.id].labelsOn && layerState[l.id].visible;
+  if (map.getLayer(l.id+'-label')) map.setLayoutProperty(l.id+'-label','visibility', v ? 'visible' : 'none');
+  const btn = document.getElementById('lbl-'+l.id);
+  if (btn) btn.classList.toggle('on', layerState[l.id].labelsOn);
 }
 
 function buildPanel(loadedCount) {
   const list = document.getElementById('layer-list');
   list.innerHTML = '';
-  document.getElementById('layer-count-hdr').textContent = `${loadedCount} loaded`;
-  LAYERS.forEach(l => {
-    const cnt = cache[l.id]?.features?.length ?? '—';
+  document.getElementById('lc').textContent = loadedCount;
+
+  function makeRow(l, isOverlay) {
+    const state = layerState[l.id];
+    const cnt = cache[l.id]?.features?.length;
+    const cntStr = cnt !== undefined ? cnt.toLocaleString() : (isOverlay ? 'LIVE' : '—');
+    const hasLabel = map.getLayer(l.id+'-label');
+
     const row = document.createElement('div');
-    row.className = 'layer-row'; row.id = 'row-'+l.id;
+    row.className = 'lrow'; row.id = 'row-'+l.id;
+    if (!state.visible) row.classList.add('off');
+
     row.innerHTML = `
-      <div class="dot" style="background:${l.color};box-shadow:0 0 6px ${l.color}66"></div>
-      <span class="lname">${l.label}</span>
-      <span class="lcount">${typeof cnt==='number' ? cnt.toLocaleString() : cnt}</span>
+      <div class="lrow-top" onclick="toggleRow('${l.id}')">
+        <div class="dot" style="background:${l.color};box-shadow:0 0 5px ${l.color}55"></div>
+        <span class="lname">${l.label}</span>
+        <span class="lcount">${cntStr}</span>
+        <span class="eye" title="Toggle visibility">👁</span>
+      </div>
+      <div class="lrow-ctrl">
+        <label>OPACITY</label>
+        <input type="range" class="opslider" min="0" max="1" step="0.05"
+          value="${state.opacity}"
+          oninput="onOpacity('${l.id}', parseFloat(this.value))"
+          onclick="event.stopPropagation()"/>
+        ${!isOverlay ? `<button class="lbl-btn${state.labelsOn?' on':''}" id="lbl-${l.id}"
+          onclick="toggleLabels(ALL_LAYERS.find(x=>x.id==='${l.id}'))">LABELS</button>` : ''}
+      </div>
     `;
-    row.onclick = () => toggleVis(l);
     list.appendChild(row);
-  });
+  }
+
+  // Section: CSG Overlays
+  const sh1 = document.createElement('div'); sh1.className='section-hdr'; sh1.textContent='CSG OVERLAY';
+  list.appendChild(sh1);
+  OVERLAY_LAYERS.forEach(l => makeRow(l, true));
+
+  // Section: Fiber Layers
+  const sh2 = document.createElement('div'); sh2.className='section-hdr'; sh2.textContent='FIBER NETWORK';
+  list.appendChild(sh2);
+  FIBER_LAYERS.forEach(l => makeRow(l, false));
 }
 
-function toggleVis(l) {
-  const row = document.getElementById('row-'+l.id);
-  if (vis.has(l.id)) {
-    vis.delete(l.id); row.classList.add('off');
-    const ids = l.type==='polygon' ? [l.id+'-fill',l.id+'-line'] : [l.id];
-    ids.forEach(id => { if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','none'); });
-  } else {
-    vis.add(l.id); row.classList.remove('off');
-    const ids = l.type==='polygon' ? [l.id+'-fill',l.id+'-line'] : [l.id];
-    ids.forEach(id => { if(map.getLayer(id)) map.setLayoutProperty(id,'visibility','visible'); });
-  }
+function toggleRow(id) {
+  const l = ALL_LAYERS.find(x=>x.id===id);
+  const newVis = !layerState[id].visible;
+  setVisibility(l, newVis);
+  const row = document.getElementById('row-'+id);
+  if (row) row.classList.toggle('off', !newVis);
+}
+function onOpacity(id, val) {
+  const l = ALL_LAYERS.find(x=>x.id===id);
+  setOpacity(l, val);
 }
 
 function toggleBasemap() {
-  const nxt = MAPS[basemap].next;
-  document.getElementById('bmap-btn').textContent = MAPS[nxt].btnLabel;
-  map.setStyle(buildStyle(nxt));
-  map.once('styledata', () => LAYERS.forEach(l => { if(cache[l.id]) addLayer(l, cache[l.id]); }));
+  const nxt = BASEMAPS[basemap].next;
+  document.getElementById('bmap').textContent = BASEMAPS[nxt].btn;
+  map.setStyle(baseStyle(nxt));
+  map.once('styledata', () => {
+    OVERLAY_LAYERS.forEach(l => addRasterOverlay(l));
+    FIBER_LAYERS.forEach(l => { if(cache[l.id]) addFiberLayer(l, cache[l.id]); });
+  });
   basemap = nxt;
 }
 
-// Nominatim geocoder for search
-document.getElementById('search-input').addEventListener('keydown', async e => {
+// Search via Nominatim
+document.getElementById('si').addEventListener('keydown', async e => {
   if (e.key !== 'Enter') return;
-  const q = e.target.value.trim();
-  if (!q) return;
+  const q = e.target.value.trim(); if (!q) return;
   try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Ulundi, South Africa')}&format=json&limit=1`);
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', KwaZulu-Natal, South Africa')}&format=json&limit=1`);
     const d = await r.json();
-    if (d.length) {
-      map.flyTo({ center:[+d[0].lon, +d[0].lat], zoom:16, duration:1200 });
-    }
+    if (d.length) map.flyTo({ center:[+d[0].lon,+d[0].lat], zoom:17, duration:1200 });
+    else alert('Location not found');
   } catch {}
 });
 
 async function init() {
-  map = new maplibregl.Map({
-    container:'map', style:buildStyle('satellite'),
-    center:[31.4162, -28.3191], zoom:14, attributionControl:false
+  // Init layer state
+  ALL_LAYERS.forEach(l => {
+    layerState[l.id] = { visible:true, opacity: l.defaultOpacity ?? 1, labelsOn:false };
   });
-  popup = new maplibregl.Popup({ closeButton:true, maxWidth:'260px' });
+
+  map = new maplibregl.Map({
+    container:'map', style:baseStyle('satellite'),
+    center:[31.4162,-28.3191], zoom:14, attributionControl:false
+  });
+  popup = new maplibregl.Popup({ closeButton:true, maxWidth:'270px' });
   map.addControl(new maplibregl.NavigationControl(),'bottom-right');
   map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-left');
-
-  // Coordinate tracker
   map.on('mousemove', e => {
-    document.getElementById('coord-display').textContent =
+    document.getElementById('coord').textContent =
       `LAT ${e.lngLat.lat.toFixed(5)}  LNG ${e.lngLat.lng.toFixed(5)}`;
   });
 
   map.on('load', async () => {
+    // 1. Add CSG tile overlay first (sits under fiber layers)
+    document.getElementById('lm').textContent = 'LOADING CSG CADASTRAL...';
+    OVERLAY_LAYERS.forEach(l => addRasterOverlay(l));
+
+    // 2. Load fiber layers from Supabase
     let ok = 0;
-    for (const l of LAYERS) {
-      document.getElementById('lmsg').textContent = `LOADING ${l.label.toUpperCase()}...`;
+    for (const l of FIBER_LAYERS) {
+      document.getElementById('lm').textContent = `LOADING ${l.label.toUpperCase()}...`;
       try {
         const gj = await apiFetch(l.table);
         cache[l.id] = gj;
-        addLayer(l, gj);
+        addFiberLayer(l, gj);
         const cnt = gj.features?.length ?? 0;
         const el = document.getElementById(l.stat);
         if (el) el.textContent = cnt.toLocaleString();
         ok++;
       } catch(err) {
-        console.warn(`Failed: ${l.table}`, err.message);
+        console.warn(`Layer ${l.table} failed:`, err.message);
         const el = document.getElementById(l.stat);
-        if (el) { el.textContent = 'N/A'; el.style.color='var(--red)'; }
+        if (el) { el.textContent='N/A'; el.style.color='var(--red)'; }
       }
     }
-    buildPanel(ok);
-    document.getElementById('live-txt').textContent = `LIVE · ${ok}/${LAYERS.length}`;
+
+    buildPanel(ok + OVERLAY_LAYERS.length);
+    document.getElementById('ptxt').textContent = `LIVE · ${ok}/${FIBER_LAYERS.length}`;
     document.getElementById('loading').classList.add('gone');
   });
 }
+
+// Expose globals needed by inline handlers
+window.toggleRow = toggleRow;
+window.onOpacity = onOpacity;
+window.toggleLabels = toggleLabels;
+window.toggleBasemap = toggleBasemap;
+window.ALL_LAYERS = ALL_LAYERS;
 
 init();
 </script>
