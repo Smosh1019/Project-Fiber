@@ -267,15 +267,15 @@ const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const LAYER_CONFIG = [
 
   // ── Points ──────────────────────────────────────────────
-  { id:'poles',    table:'vw_poles_api',    color:'#00e5ff', type:'point',   label:'Poles',          labelFields:['pole_no','pole_id','id','name'],       statEl:'stat-poles',    radius:5  },
-  { id:'manholes', table:'vw_manholes_api', color:'#ff6b35', type:'point',   label:'Manholes',        labelFields:['manhole_no','mh_no','id','name'],       statEl:'stat-manholes', radius:5  },
-  { id:'domes',    table:'vw_dome_api',     color:'#a78bfa', type:'point',   label:'Dome Closures',   labelFields:['dome_no','dome_id','id','name'],         statEl:null,            radius:6  },
-  { id:'houses',   table:'vw_houses_api',   color:'#c084fc', type:'point',   label:'Houses / Drops',  labelFields:['house_no','stand_no','address','id'],    statEl:'stat-houses',   radius:4  },
+  { id:'poles',    table:'d_poles',    color:'#00e5ff', type:'point',   label:'Poles',          labelFields:['pole_no','pole_id','id','name'],       statEl:'stat-poles',    radius:5  },
+  { id:'manholes', table:'d_manholes', color:'#ff6b35', type:'point',   label:'Manholes',        labelFields:['manhole_no','mh_no','id','name'],       statEl:'stat-manholes', radius:5  },
+  { id:'domes',    table:'d_dome',     color:'#a78bfa', type:'point',   label:'Dome Closures',   labelFields:['dome_no','dome_id','id','name'],         statEl:null,            radius:6  },
+  { id:'houses',   table:'d_houses',   color:'#c084fc', type:'point',   label:'Houses / Drops',  labelFields:['house_no','stand_no','address','id'],    statEl:'stat-houses',   radius:4  },
 
   // ── Lines ────────────────────────────────────────────────
-  { id:'cable144', table:'vw_144f_api',     color:'#ff9500', type:'line',    label:'144F Cable',      labelFields:['name','cable_name','cable_id','id'],     statEl:null,            weight:3  },
-  { id:'cable48',  table:'vw_48f_api',      color:'#fb923c', type:'line',    label:'48F Cable',       labelFields:['name','cable_name','cable_id','id'],     statEl:null,            weight:2.5},
-  { id:'routes',   table:'vw_routes_api',         color:'#00ff88', type:'line',    label:'Fiber Routes',    labelFields:['name','route_name','cable_id','id'],     statEl:null,            weight:2  },
+  { id:'cable144', table:'d_144f',     color:'#ff9500', type:'line',    label:'144F Cable',      labelFields:['name','cable_name','cable_id','id'],     statEl:null,            weight:3  },
+  { id:'cable48',  table:'d_48f',      color:'#fb923c', type:'line',    label:'48F Cable',       labelFields:['name','cable_name','cable_id','id'],     statEl:null,            weight:2.5},
+  { id:'routes',   table:'d_s',         color:'#00ff88', type:'line',    label:'Fiber Routes',    labelFields:['name','route_name','cable_id','id'],     statEl:null,            weight:2  },
   
 
   // ── ADD MORE LAYERS HERE ─────────────────────────────────
