@@ -19,360 +19,125 @@
     --accent3: #ff6b35;
     --text: #c8d8e8;
     --text-dim: #4a6080;
-    --pole: #00e5ff;
-    --manhole: #ff6b35;
-    --fiber: #00ff88;
-    --erven: rgba(0,229,255,0.15);
+    --c-pole:    #00e5ff;
+    --c-manhole: #ff6b35;
+    --c-dome:    #a78bfa;
+    --c-house:   #c084fc;
+    --c-144f:    #ff9500;
+    --c-48f:     #fb923c;
+    --c-ds:      #00ff88;
+    --c-csg:     #f97316;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Rajdhani',sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
 
-  body {
-    font-family: 'Rajdhani', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* ── TOP BAR ── */
+  /* ── HEADER ── */
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    height: 52px;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-    z-index: 1000;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 20px; height:52px; background:var(--panel);
+    border-bottom:1px solid var(--border); flex-shrink:0; z-index:1000;
   }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
+  .logo { display:flex; align-items:center; gap:12px; }
   .logo-icon {
-    width: 32px; height: 32px;
-    background: var(--accent);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; color: var(--bg); font-weight: 700;
+    width:32px; height:32px; background:var(--accent);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; color:var(--bg); font-weight:700;
   }
+  .logo h1 { font-size:18px; font-weight:700; letter-spacing:2px; color:#fff; text-transform:uppercase; }
+  .logo span { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent); letter-spacing:1px; }
+  .header-stats { display:flex; gap:20px; }
+  .stat { text-align:right; }
+  .stat-val { font-family:'Share Tech Mono',monospace; font-size:16px; color:var(--accent2); font-weight:700; }
+  .stat-lbl { font-size:10px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; }
+  .live-badge { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent2); letter-spacing:1px; }
+  .live-dot { width:7px; height:7px; background:var(--accent2); border-radius:50%; animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.3)} }
 
-  .logo h1 {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #fff;
-    text-transform: uppercase;
-  }
-
-  .logo span {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 1px;
-  }
-
-  .header-stats {
-    display: flex;
-    gap: 24px;
-  }
-
-  .stat {
-    text-align: right;
-  }
-
-  .stat-val {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 16px;
-    color: var(--accent2);
-    font-weight: 700;
-  }
-
-  .stat-lbl {
-    font-size: 10px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .live-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--accent2);
-    letter-spacing: 1px;
-  }
-
-  .live-dot {
-    width: 7px; height: 7px;
-    background: var(--accent2);
-    border-radius: 50%;
-    animation: pulse 1.5s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.3); }
-  }
-
-  /* ── MAIN LAYOUT ── */
-  .main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+  /* ── LAYOUT ── */
+  .main { display:flex; flex:1; overflow:hidden; }
 
   /* ── SIDEBAR ── */
-  .sidebar {
-    width: 260px;
-    background: var(--panel);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    overflow-y: auto;
-  }
+  .sidebar { width:268px; background:var(--panel); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow-y:auto; }
+  .sidebar::-webkit-scrollbar { width:3px; }
+  .sidebar::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-  .sidebar-section {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-  }
+  .sidebar-section { padding:12px 16px; border-bottom:1px solid var(--border); }
+  .sidebar-title { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:10px; }
 
-  .sidebar-title {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 12px;
-  }
+  /* Search */
+  .search-wrap { display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:0 10px; }
+  .search-wrap input { background:transparent; border:none; outline:none; color:var(--text); font-family:'Rajdhani',sans-serif; font-size:13px; padding:7px 0; width:100%; }
+  .search-wrap input::placeholder { color:var(--text-dim); }
+  .search-wrap span { color:var(--text-dim); font-size:13px; }
 
-  /* Layer toggles */
-  .layer-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 7px 0;
-    cursor: pointer;
-  }
-
-  .layer-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .layer-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .layer-count {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
-  }
-
-  /* Toggle switch */
-  .toggle {
-    position: relative;
-    width: 32px; height: 18px;
-  }
-  .toggle input { display: none; }
-  .toggle-slider {
-    position: absolute; inset: 0;
-    background: var(--border);
-    border-radius: 9px;
-    transition: .2s;
-    cursor: pointer;
-  }
-  .toggle-slider::after {
-    content: '';
-    position: absolute;
-    width: 12px; height: 12px;
-    background: #fff;
-    border-radius: 50%;
-    top: 3px; left: 3px;
-    transition: .2s;
-  }
-  .toggle input:checked + .toggle-slider { background: var(--accent); }
-  .toggle input:checked + .toggle-slider::after { transform: translateX(14px); }
+  /* Layer rows */
+  .layer-item { display:flex; align-items:center; justify-content:space-between; padding:6px 0; }
+  .layer-left { display:flex; align-items:center; gap:9px; font-size:13px; font-weight:600; flex:1; }
+  .layer-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .layer-line { width:16px; height:3px; border-radius:2px; flex-shrink:0; }
+  .layer-actions { display:flex; align-items:center; gap:6px; }
+  .layer-count { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--text-dim); min-width:28px; text-align:right; }
+  .lbl-tog { font-size:9px; padding:1px 5px; border:1px solid var(--border); border-radius:3px; color:var(--text-dim); cursor:pointer; background:transparent; font-family:'Share Tech Mono',monospace; transition:.15s; }
+  .lbl-tog.on { color:var(--accent); border-color:var(--accent); background:rgba(0,229,255,.08); }
+  .toggle { position:relative; width:30px; height:17px; }
+  .toggle input { display:none; }
+  .toggle-slider { position:absolute; inset:0; background:var(--border); border-radius:9px; transition:.2s; cursor:pointer; }
+  .toggle-slider::after { content:''; position:absolute; width:11px; height:11px; background:#fff; border-radius:50%; top:3px; left:3px; transition:.2s; }
+  .toggle input:checked + .toggle-slider { background:var(--accent); }
+  .toggle input:checked + .toggle-slider::after { transform:translateX(13px); }
 
   /* Info panel */
-  .info-panel {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-  }
+  .info-box { background:rgba(0,229,255,.04); border:1px solid rgba(0,229,255,.12); border-radius:6px; padding:10px 12px; font-size:13px; color:var(--text-dim); min-height:58px; }
+  .info-box.has-data { color:var(--text); }
+  .info-box strong { color:var(--accent); display:block; margin-bottom:5px; font-size:14px; }
+  .info-row { display:flex; justify-content:space-between; font-size:11px; padding:2px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+  .info-row:last-child { border:none; }
+  .info-row span:last-child { color:var(--accent2); font-family:'Share Tech Mono',monospace; }
 
-  .info-box {
-    background: rgba(0,229,255,0.05);
-    border: 1px solid rgba(0,229,255,0.15);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 13px;
-    color: var(--text-dim);
-    min-height: 60px;
-  }
-
-  .info-box.has-data { color: var(--text); }
-  .info-box strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 14px; }
-  .info-box .info-row { display: flex; justify-content: space-between; font-size: 12px; padding: 2px 0; }
-  .info-box .info-row span:last-child { color: var(--accent2); font-family: 'Share Tech Mono', monospace; }
+  /* Basemaps */
+  .basemap-btns { display:flex; gap:5px; flex-wrap:wrap; }
+  .bm-btn { flex:1; min-width:60px; padding:5px 6px; background:var(--border); border:1px solid transparent; border-radius:4px; color:var(--text-dim); font-family:'Rajdhani',sans-serif; font-size:12px; font-weight:600; cursor:pointer; text-align:center; transition:.15s; }
+  .bm-btn:hover { color:var(--text); }
+  .bm-btn.active { background:rgba(0,229,255,.08); border-color:var(--accent); color:var(--accent); }
 
   /* Loading */
-  .loading-bar {
-    height: 2px;
-    background: var(--border);
-    position: relative;
-    overflow: hidden;
-    margin-top: 6px;
-    border-radius: 1px;
-  }
-  .loading-bar::after {
-    content: '';
-    position: absolute;
-    height: 100%;
-    width: 40%;
-    background: var(--accent);
-    animation: loading 1.2s infinite;
-    border-radius: 1px;
-  }
-  @keyframes loading { 0% { left: -40%; } 100% { left: 100%; } }
-  .loading-bar.done { display: none; }
+  .loading-bar { height:2px; background:var(--border); position:relative; overflow:hidden; margin-top:8px; border-radius:1px; }
+  .loading-bar::after { content:''; position:absolute; height:100%; width:40%; background:var(--accent); animation:loading 1.2s infinite; border-radius:1px; }
+  @keyframes loading { 0%{left:-40%} 100%{left:100%} }
+  .loading-bar.done { display:none; }
 
-  /* Basemap switcher */
-  .basemap-btns {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .bm-btn {
-    flex: 1;
-    min-width: 70px;
-    padding: 6px 8px;
-    background: var(--border);
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: var(--text-dim);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    transition: .15s;
-    letter-spacing: .5px;
-  }
-  .bm-btn:hover { color: var(--text); border-color: var(--border); background: #1a2535; }
-  .bm-btn.active { background: rgba(0,229,255,0.1); border-color: var(--accent); color: var(--accent); }
+  /* Realtime badge */
+  .rt-badge { display:inline-flex; align-items:center; gap:4px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent2); }
+  .rt-dot { width:5px; height:5px; background:var(--accent2); border-radius:50%; animation:pulse 1.5s infinite; }
+  .rt-badge.off { color:var(--text-dim); }
+  .rt-badge.off .rt-dot { background:var(--text-dim); animation:none; }
+
+  /* Legend */
+  .legend-item { display:flex; align-items:center; gap:8px; font-size:12px; padding:3px 0; }
 
   /* ── MAP ── */
-  #map {
-    flex: 1;
-    background: var(--bg);
-  }
-
-  /* Leaflet overrides */
-  .leaflet-container { background: #0a0e14 !important; }
-  .leaflet-control-zoom {
-    border: 1px solid var(--border) !important;
-    background: var(--panel) !important;
-  }
-  .leaflet-control-zoom a {
-    background: var(--panel) !important;
-    color: var(--text) !important;
-    border-bottom: 1px solid var(--border) !important;
-    font-size: 16px !important;
-  }
-  .leaflet-control-zoom a:hover { background: var(--border) !important; color: #fff !important; }
-  .leaflet-control-attribution { background: rgba(10,14,20,0.8) !important; color: var(--text-dim) !important; font-size: 10px !important; }
-  .leaflet-control-attribution a { color: var(--text-dim) !important; }
+  #map { flex:1; background:var(--bg); }
+  .leaflet-container { background:#0a0e14 !important; }
+  .leaflet-control-zoom { border:1px solid var(--border) !important; background:var(--panel) !important; }
+  .leaflet-control-zoom a { background:var(--panel) !important; color:var(--text) !important; border-bottom:1px solid var(--border) !important; font-size:16px !important; }
+  .leaflet-control-zoom a:hover { background:var(--border) !important; color:#fff !important; }
+  .leaflet-control-attribution { background:rgba(10,14,20,.8) !important; color:var(--text-dim) !important; font-size:10px !important; }
+  .leaflet-control-attribution a { color:var(--text-dim) !important; }
 
   /* Custom popup */
-  .leaflet-popup-content-wrapper {
-    background: var(--panel) !important;
-    border: 1px solid var(--accent) !important;
-    border-radius: 6px !important;
-    box-shadow: 0 0 20px rgba(0,229,255,0.2) !important;
-    color: var(--text) !important;
-    font-family: 'Rajdhani', sans-serif !important;
-  }
-  .leaflet-popup-tip { background: var(--panel) !important; }
-  .leaflet-popup-content { margin: 12px 14px !important; font-size: 13px !important; }
+  .leaflet-popup-content-wrapper { background:var(--panel) !important; border:1px solid var(--accent) !important; border-radius:6px !important; box-shadow:0 0 20px rgba(0,229,255,.2) !important; color:var(--text) !important; font-family:'Rajdhani',sans-serif !important; }
+  .leaflet-popup-tip { background:var(--panel) !important; }
+  .leaflet-popup-content { margin:12px 14px !important; font-size:13px !important; }
+  .popup-title { font-size:15px; font-weight:700; color:var(--accent); margin-bottom:8px; letter-spacing:1px; text-transform:uppercase; border-bottom:1px solid var(--border); padding-bottom:6px; }
+  .popup-row { display:flex; justify-content:space-between; gap:16px; padding:3px 0; font-size:12px; }
+  .popup-key { color:var(--text-dim); }
+  .popup-val { color:var(--text); font-family:'Share Tech Mono',monospace; font-size:11px; max-width:130px; overflow:hidden; text-overflow:ellipsis; }
 
-  .popup-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--accent);
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .popup-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 3px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .popup-row:last-child { border-bottom: none; }
-  .popup-key { color: var(--text-dim); }
-  .popup-val { color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 11px; }
-
-  /* Status bar */
-  .statusbar {
-    height: 28px;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    gap: 20px;
-    flex-shrink: 0;
-  }
-
-  .status-item {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .status-item span { color: var(--text); }
-
-  /* Tooltip config notice */
-  .config-notice {
-    margin: 12px 16px;
-    background: rgba(255,107,53,0.08);
-    border: 1px solid rgba(255,107,53,0.3);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 12px;
-    color: #ff9966;
-    line-height: 1.5;
-  }
-  .config-notice strong { color: var(--accent3); display: block; margin-bottom: 4px; }
-  .config-notice code {
-    background: rgba(0,0,0,0.3);
-    border-radius: 3px;
-    padding: 1px 5px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: #ffd080;
-  }
+  /* ── STATUS BAR ── */
+  .statusbar { height:28px; background:var(--panel); border-top:1px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:20px; flex-shrink:0; }
+  .status-item { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text-dim); display:flex; align-items:center; gap:5px; }
+  .status-item span { color:var(--text); }
 </style>
 </head>
 <body>
@@ -386,347 +151,480 @@
     </div>
   </div>
   <div class="header-stats">
-    <div class="stat">
-      <div class="stat-val" id="stat-poles">—</div>
-      <div class="stat-lbl">Poles</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-manholes">—</div>
-      <div class="stat-lbl">Manholes</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-routes">—</div>
-      <div class="stat-lbl">Route km</div>
-    </div>
+    <div class="stat"><div class="stat-val" id="stat-poles">—</div><div class="stat-lbl">Poles</div></div>
+    <div class="stat"><div class="stat-val" id="stat-manholes">—</div><div class="stat-lbl">Manholes</div></div>
+    <div class="stat"><div class="stat-val" id="stat-houses">—</div><div class="stat-lbl">Houses</div></div>
+    <div class="stat"><div class="stat-val" id="stat-km">—</div><div class="stat-lbl">Route km</div></div>
   </div>
-  <div class="live-badge">
-    <div class="live-dot"></div>
-    LIVE · SUPABASE
-  </div>
+  <div class="live-badge"><div class="live-dot"></div>LIVE · SUPABASE</div>
 </header>
 
 <div class="main">
-  <div class="sidebar">
+<div class="sidebar">
 
-    <!-- Config notice -->
-    <div class="config-notice">
-      <strong>⚙ Setup Required</strong>
-      Edit this file and replace<br>
-      <code>YOUR_SUPABASE_URL</code> and<br>
-      <code>YOUR_SUPABASE_ANON_KEY</code><br>
-      with your project values.
+  <!-- Search -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Search Location</div>
+    <div class="search-wrap">
+      <span>🔍</span>
+      <input id="search-input" type="text" placeholder="Street, area or place…"/>
     </div>
-
-    <!-- Layers -->
-    <div class="sidebar-section">
-      <div class="sidebar-title">Map Layers</div>
-
-      <div class="layer-item">
-        <div class="layer-left">
-          <div class="layer-dot" style="background:var(--pole)"></div>
-          Poles
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="layer-count" id="cnt-poles">…</span>
-          <label class="toggle"><input type="checkbox" id="tog-poles" checked onchange="toggleLayer('poles')"><div class="toggle-slider"></div></label>
-        </div>
-      </div>
-
-      <div class="layer-item">
-        <div class="layer-left">
-          <div class="layer-dot" style="background:var(--manhole)"></div>
-          Manholes
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="layer-count" id="cnt-manholes">…</span>
-          <label class="toggle"><input type="checkbox" id="tog-manholes" checked onchange="toggleLayer('manholes')"><div class="toggle-slider"></div></label>
-        </div>
-      </div>
-
-      <div class="layer-item">
-        <div class="layer-left">
-          <div class="layer-dot" style="background:var(--fiber);border-radius:2px;height:3px;width:14px"></div>
-          Fiber Routes
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="layer-count" id="cnt-routes">…</span>
-          <label class="toggle"><input type="checkbox" id="tog-fiber_routes" checked onchange="toggleLayer('fiber_routes')"><div class="toggle-slider"></div></label>
-        </div>
-      </div>
-
-      <div class="layer-item">
-        <div class="layer-left">
-          <div class="layer-dot" style="background:var(--accent);border-radius:2px"></div>
-          Erven (CSG)
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="layer-count" id="cnt-erven">…</span>
-          <label class="toggle"><input type="checkbox" id="tog-erven" checked onchange="toggleLayer('erven')"><div class="toggle-slider"></div></label>
-        </div>
-      </div>
-
-      <div class="loading-bar" id="loading-bar"></div>
-    </div>
-
-    <!-- Selected feature info -->
-    <div class="sidebar-section">
-      <div class="sidebar-title">Selected Feature</div>
-      <div class="info-box" id="info-box">
-        Click any feature on the map to inspect it.
-      </div>
-    </div>
-
-    <!-- Basemap -->
-    <div class="sidebar-section">
-      <div class="sidebar-title">Basemap</div>
-      <div class="basemap-btns">
-        <button class="bm-btn" onclick="setBasemap('satellite')">Satellite</button>
-        <button class="bm-btn active" onclick="setBasemap('hybrid')">Hybrid</button>
-        <button class="bm-btn" onclick="setBasemap('osm')">Streets</button>
-        <button class="bm-btn" onclick="setBasemap('dark')">Dark</button>
-      </div>
-    </div>
-
-    <!-- Legend -->
-    <div class="sidebar-section">
-      <div class="sidebar-title">Legend</div>
-      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
-        <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;background:var(--pole);border-radius:50%"></div> Distribution Pole</div>
-        <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;background:var(--manhole);border-radius:50%"></div> Manhole / Chamber</div>
-        <div style="display:flex;align-items:center;gap:8px"><div style="width:14px;height:3px;background:var(--fiber)"></div> Fiber Cable Route</div>
-        <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;background:var(--erven);border:1px solid var(--accent)"></div> Cadastral Erf</div>
-      </div>
-    </div>
-
   </div>
 
-  <div id="map"></div>
+  <!-- CSG Overlay -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Cadastral Overlay</div>
+    <div class="layer-item">
+      <div class="layer-left">
+        <div class="layer-dot" style="background:var(--c-csg)"></div>
+        CSG Property Viewer
+      </div>
+      <div class="layer-actions">
+        <input type="range" id="csg-opacity" min="0" max="1" step="0.1" value="0.6"
+          style="width:52px;accent-color:var(--c-csg)" oninput="setCsgOpacity(this.value)"/>
+        <label class="toggle">
+          <input type="checkbox" id="tog-csg" checked onchange="toggleCsg()">
+          <div class="toggle-slider"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fiber Layers -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Infrastructure Layers</div>
+    <div id="layer-list"></div>
+    <div class="loading-bar" id="loading-bar"></div>
+  </div>
+
+  <!-- Selected Feature -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Selected Feature</div>
+    <div class="info-box" id="info-box">Click any feature on the map to inspect it.</div>
+  </div>
+
+  <!-- Basemap -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Basemap</div>
+    <div class="basemap-btns">
+      <button class="bm-btn" onclick="setBasemap('satellite',this)">Satellite</button>
+      <button class="bm-btn active" onclick="setBasemap('hybrid',this)">Hybrid</button>
+      <button class="bm-btn" onclick="setBasemap('osm',this)">Streets</button>
+      <button class="bm-btn" onclick="setBasemap('dark',this)">Dark</button>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Legend</div>
+    <div class="legend-item"><div style="width:9px;height:9px;background:var(--c-pole);border-radius:50%"></div> Distribution Pole</div>
+    <div class="legend-item"><div style="width:9px;height:9px;background:var(--c-manhole);border-radius:50%"></div> Manhole / Chamber</div>
+    <div class="legend-item"><div style="width:9px;height:9px;background:var(--c-dome);border-radius:50%"></div> Dome Closure</div>
+    <div class="legend-item"><div style="width:9px;height:9px;background:var(--c-house);border-radius:50%"></div> House / Drop Point</div>
+    <div class="legend-item"><div style="width:16px;height:3px;background:var(--c-144f);border-radius:2px"></div> 144F Cable</div>
+    <div class="legend-item"><div style="width:16px;height:3px;background:var(--c-48f);border-radius:2px"></div> 48F Cable</div>
+    <div class="legend-item"><div style="width:16px;height:3px;background:var(--c-ds);border-radius:2px"></div> Fiber Routes (d_s)</div>
+  </div>
+
+  <!-- Realtime Status -->
+  <div class="sidebar-section">
+    <div class="sidebar-title">Realtime Sync</div>
+    <div class="rt-badge off" id="rt-status"><div class="rt-dot"></div><span id="rt-text">Connecting…</span></div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:6px">
+      QGIS edits sync to map automatically when Supabase Realtime is enabled on your tables.
+    </div>
+  </div>
+
+</div>
+<div id="map"></div>
 </div>
 
 <div class="statusbar">
   <div class="status-item">📡 DB: <span id="db-status">Connecting…</span></div>
-  <div class="status-item">📍 Center: <span id="coord-display">-28.2791°, 31.4323°</span></div>
-  <div class="status-item">🔍 Zoom: <span id="zoom-display">13</span></div>
-  <div class="status-item" style="margin-left:auto">Ulundi Fiber Project · Powered by Supabase + QGIS</div>
+  <div class="status-item">📍 <span id="coord-display">-28.2791°, 31.4323°</span></div>
+  <div class="status-item">🔍 Zoom: <span id="zoom-display">14</span></div>
+  <div class="status-item" style="margin-left:auto">Ulundi Fiber · Supabase + QGIS + Leaflet</div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-//  ⚙  CONFIGURATION — Replace these values
-// ═══════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  SUPABASE CONNECTION
+// ════════════════════════════════════════════════════════════
 const SUPABASE_URL  = 'https://zglgruixqkgytutcforw.supabase.co';   // e.g. https://xxxx.supabase.co
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGdydWl4cWtneXR1dGNmb3J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTY0MzQsImV4cCI6MjA5NTk3MjQzNH0.Q8k-H-4_KdqkfYTa97P8-EZjQ93S35WZWAN4K7X2wx0'; // from Project Settings → API
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnbGdydWl4cWtneXR1dGNmb3J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTY0MzQsImV4cCI6MjA5NTk3MjQzNH0.Q8k-H-4_KdqkfYTa97P8-EZjQ93S35WZWAN4K7X2wx0'; // from Project Settings → API;
 
-// Table names — match exactly what you imported from QGIS
-const TABLES = {
-  poles:        { color: '#00e5ff', type: 'point',   label: 'Pole' },
-  manholes:     { color: '#ff6b35', type: 'point',   label: 'Manhole' },
-  fiber_routes: { color: '#00ff88', type: 'line',    label: 'Fiber Route' },
-  erven:        { color: '#00e5ff', type: 'polygon', label: 'Erf' },
-};
-// ═══════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+//  LAYER CONFIGURATION
+//  table       — exact Supabase view/table name
+//  color       — hex color
+//  type        — 'point' | 'line' | 'polygon'
+//  label       — display name
+//  labelFields — column names to try for map labels (first match used)
+//  statEl      — header stat element id (or null)
+//  weight      — line thickness (lines only)
+//  section     — group in sidebar
+// ════════════════════════════════════════════════════════════
+const LAYER_CONFIG = [
 
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+  // ── Points ──────────────────────────────────────────────
+  { id:'poles',    table:'vw_poles',    color:'#00e5ff', type:'point',   label:'Poles',          labelFields:['pole_no','pole_id','id','name'],       statEl:'stat-poles',    radius:5  },
+  { id:'manholes', table:'vw_manholes', color:'#ff6b35', type:'point',   label:'Manholes',        labelFields:['manhole_no','mh_no','id','name'],       statEl:'stat-manholes', radius:5  },
+  { id:'domes',    table:'vw_dome',     color:'#a78bfa', type:'point',   label:'Dome Closures',   labelFields:['dome_no','dome_id','id','name'],         statEl:null,            radius:6  },
+  { id:'houses',   table:'vw_houses',   color:'#c084fc', type:'point',   label:'Houses / Drops',  labelFields:['house_no','stand_no','address','id'],    statEl:'stat-houses',   radius:4  },
 
-// ── MAP INIT ──
-const map = L.map('map', {
-  center: [-28.2791, 31.4323],
-  zoom: 14,
-  zoomControl: true,
-});
+  // ── Lines ────────────────────────────────────────────────
+  { id:'cable144', table:'vw_144f',     color:'#ff9500', type:'line',    label:'144F Cable',      labelFields:['name','cable_name','cable_id','id'],     statEl:null,            weight:3  },
+  { id:'cable48',  table:'vw_48f',      color:'#fb923c', type:'line',    label:'48F Cable',       labelFields:['name','cable_name','cable_id','id'],     statEl:null,            weight:2.5},
+  { id:'routes',   table:'d_s',         color:'#00ff88', type:'line',    label:'Fiber Routes',    labelFields:['name','route_name','cable_id','id'],     statEl:null,            weight:2  },
 
-// Basemaps
+  // ── ADD MORE LAYERS HERE ─────────────────────────────────
+
+];
+// ════════════════════════════════════════════════════════════
+//  END LAYER CONFIGURATION
+// ════════════════════════════════════════════════════════════
+
+// CSG tile URL (ArcGIS MapServer — South Africa cadastral)
+const CSG_TILES = 'https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/tile/{z}/{y}/{x}';
+const SKIP_COLS = ['geom','geometry','wkb_geometry','the_geom','ogc_fid'];
+
+// ── Init Supabase (for Realtime) ──
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── Init Map ──
+const map = L.map('map', { center:[-28.2791,31.4323], zoom:14, zoomControl:true });
+
+// ── Basemaps ──
 const basemaps = {
-  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri' }),
-  hybrid:    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri' }),
-  osm:       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }),
-  dark:      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CartoDB' }),
+  satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri'}),
+  hybrid:    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri'}),
+  osm:       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}),
+  dark:      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© CartoDB'}),
 };
+const labelsOverlay = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{attribution:''});
 
-// Labels overlay for hybrid
-const labelsOverlay = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', { attribution: '' });
+// ── CSG Overlay ──
+const csgLayer = L.tileLayer(CSG_TILES, { attribution:'© CSG / DRDLR SA', opacity:0.6, zIndex:2 });
 
 basemaps.hybrid.addTo(map);
 labelsOverlay.addTo(map);
-let currentBasemap = 'hybrid';
+csgLayer.addTo(map);
 
-function setBasemap(name) {
+function setBasemap(name, btn) {
   Object.values(basemaps).forEach(b => map.removeLayer(b));
   map.removeLayer(labelsOverlay);
   basemaps[name].addTo(map);
   if (name === 'hybrid') labelsOverlay.addTo(map);
   document.querySelectorAll('.bm-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  currentBasemap = name;
+  if (btn) btn.classList.add('active');
 }
 
-// ── STATUS BAR ──
+function toggleCsg() {
+  const checked = document.getElementById('tog-csg').checked;
+  checked ? csgLayer.addTo(map) : map.removeLayer(csgLayer);
+}
+function setCsgOpacity(v) { csgLayer.setOpacity(parseFloat(v)); }
+
+// ── Status bar ──
 map.on('mousemove', e => {
-  document.getElementById('coord-display').textContent =
-    `${e.latlng.lat.toFixed(4)}°, ${e.latlng.lng.toFixed(4)}°`;
+  document.getElementById('coord-display').textContent = `${e.latlng.lat.toFixed(4)}°, ${e.latlng.lng.toFixed(4)}°`;
 });
-map.on('zoomend', () => {
-  document.getElementById('zoom-display').textContent = map.getZoom();
-});
+map.on('zoomend', () => { document.getElementById('zoom-display').textContent = map.getZoom(); });
 
-// ── LAYER STORE ──
-const layers = {};
+// ── Layer store ──
+const leafLayers  = {};   // id → Leaflet layer
+const labelLayers = {};   // id → label LayerGroup
+const geoCache    = {};   // id → GeoJSON FeatureCollection
+let totalKm = 0;
 
-function toggleLayer(name) {
-  const checked = document.getElementById(`tog-${name}`).checked;
-  if (!layers[name]) return;
-  if (checked) map.addLayer(layers[name]);
-  else map.removeLayer(layers[name]);
-}
-
-// ── POPUP BUILDER ──
-function buildPopup(props, label) {
-  const skip = ['geom','geometry','wkb_geometry','ogc_fid'];
-  let rows = '';
-  Object.entries(props).forEach(([k,v]) => {
-    if (skip.includes(k.toLowerCase()) || v === null || v === undefined) return;
-    rows += `<div class="popup-row"><span class="popup-key">${k}</span><span class="popup-val">${v}</span></div>`;
+// ── Fetch GeoJSON via REST API (reliable geometry conversion) ──
+async function fetchGeoJSON(table) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${encodeURIComponent(table)}?select=*`, {
+    headers:{
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Accept': 'application/geo+json'
+    }
   });
-  return `<div class="popup-title">${label}</div>${rows || '<span style="color:#4a6080">No attributes</span>'}`;
+  if (!res.ok) throw new Error(`${res.status} — ${table}`);
+  return res.json();
 }
 
-// ── FEATURE INFO PANEL ──
+// ── Resolve label field ──
+function resolveLabelField(candidates, props) {
+  if (!props) return null;
+  for (const f of candidates) if (f in props) return f;
+  return null;
+}
+
+// ── Build popup HTML ──
+function buildPopup(props, label) {
+  let rows = Object.entries(props)
+    .filter(([k,v]) => !SKIP_COLS.includes(k.toLowerCase()) && v !== null && v !== '')
+    .slice(0, 10)
+    .map(([k,v]) => `<div class="popup-row"><span class="popup-key">${k}</span><span class="popup-val" title="${v}">${v}</span></div>`)
+    .join('');
+  return `<div class="popup-title">${label}</div>${rows||'<span style="color:#4a6080">No attributes</span>'}`;
+}
+
+// ── Feature info sidebar ──
 function showInfo(props, label) {
-  const skip = ['geom','geometry','wkb_geometry','ogc_fid'];
   const ib = document.getElementById('info-box');
   let html = `<strong>${label}</strong>`;
-  let count = 0;
+  let n = 0;
   Object.entries(props).forEach(([k,v]) => {
-    if (skip.includes(k.toLowerCase()) || v === null || count > 5) return;
+    if (SKIP_COLS.includes(k.toLowerCase()) || v === null || n >= 7) return;
     html += `<div class="info-row"><span>${k}</span><span>${v}</span></div>`;
-    count++;
+    n++;
   });
   ib.innerHTML = html;
   ib.classList.add('has-data');
 }
 
-// ── LOAD LAYER FROM SUPABASE ──
-async function loadLayer(name, cfg) {
-  try {
-    const { data, error } = await sb.from(name).select('*').limit(5000);
-    if (error) throw error;
+// ── Add labels to map ──
+function buildLabelLayer(cfg, geojson) {
+  const sample = geojson.features?.[0]?.properties;
+  const field = resolveLabelField(cfg.labelFields, sample);
+  if (!field) return null;
 
-    document.getElementById(`cnt-${name}`).textContent = data.length;
+  const grp = L.layerGroup();
+  geojson.features.forEach(f => {
+    const val = f.properties?.[field];
+    if (!val) return;
+    let latlng;
+    const g = f.geometry;
+    if (!g) return;
+    if (g.type === 'Point') {
+      latlng = [g.coordinates[1], g.coordinates[0]];
+    } else if (g.type === 'LineString' && g.coordinates.length > 1) {
+      const mid = g.coordinates[Math.floor(g.coordinates.length/2)];
+      latlng = [mid[1], mid[0]];
+    } else if (g.type === 'MultiLineString' && g.coordinates[0]) {
+      const seg = g.coordinates[0];
+      const mid = seg[Math.floor(seg.length/2)];
+      latlng = [mid[1], mid[0]];
+    } else return;
 
-    // Update header stats
-    if (name === 'poles') document.getElementById('stat-poles').textContent = data.length;
-    if (name === 'manholes') document.getElementById('stat-manholes').textContent = data.length;
+    L.marker(latlng, {
+      icon: L.divIcon({
+        className: '',
+        html: `<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:${cfg.color};background:rgba(10,14,20,.75);padding:1px 4px;border-radius:3px;white-space:nowrap;border:1px solid ${cfg.color}33">${val}</span>`,
+        iconAnchor: [0, 0]
+      }),
+      interactive: false
+    }).addTo(grp);
+  });
+  return grp;
+}
 
-    // Find geometry column
-    const geomCols = ['geom','geometry','wkb_geometry','the_geom'];
-    const geomCol = geomCols.find(c => data[0] && data[0][c] !== undefined);
-    if (!geomCol) {
-      console.warn(`No geometry column found in table: ${name}`);
-      return;
-    }
+// ── Calculate route km ──
+function calcKm(geojson) {
+  let m = 0;
+  geojson.features.forEach(f => {
+    const g = f.geometry;
+    if (!g) return;
+    const segs = g.type === 'MultiLineString' ? g.coordinates : g.type === 'LineString' ? [g.coordinates] : [];
+    segs.forEach(seg => {
+      for (let i = 1; i < seg.length; i++) {
+        m += L.latLng(seg[i-1][1], seg[i-1][0]).distanceTo(L.latLng(seg[i][1], seg[i][0]));
+      }
+    });
+  });
+  return m / 1000;
+}
 
-    // Build GeoJSON FeatureCollection
-    const fc = {
-      type: 'FeatureCollection',
-      features: data.map(row => {
-        let geom = row[geomCol];
-        if (typeof geom === 'string') {
-          try { geom = JSON.parse(geom); } catch(e) { return null; }
-        }
-        const props = {...row};
-        delete props[geomCol];
-        return { type: 'Feature', geometry: geom, properties: props };
-      }).filter(Boolean)
-    };
-
-    let leafLayer;
-
-    if (cfg.type === 'point') {
-      leafLayer = L.geoJSON(fc, {
-        pointToLayer: (f, ll) => L.circleMarker(ll, {
-          radius: 5,
-          fillColor: cfg.color,
-          color: '#0a0e14',
-          weight: 1.5,
-          fillOpacity: 0.9,
-        }),
-        onEachFeature: (f, l) => {
-          l.bindPopup(buildPopup(f.properties, cfg.label));
-          l.on('click', () => showInfo(f.properties, cfg.label));
-        }
-      });
-
-    } else if (cfg.type === 'line') {
-      leafLayer = L.geoJSON(fc, {
-        style: { color: cfg.color, weight: 2.5, opacity: 0.85 },
-        onEachFeature: (f, l) => {
-          l.bindPopup(buildPopup(f.properties, cfg.label));
-          l.on('click', () => showInfo(f.properties, cfg.label));
-        }
-      });
-
-      // Calculate total km for routes
-      let totalM = 0;
-      fc.features.forEach(f => {
-        const coords = f.geometry?.coordinates;
-        if (!coords) return;
-        const arr = f.geometry.type === 'MultiLineString' ? coords.flat() : coords;
-        for (let i = 1; i < arr.length; i++) {
-          const p1 = L.latLng(arr[i-1][1], arr[i-1][0]);
-          const p2 = L.latLng(arr[i][1], arr[i][0]);
-          totalM += p1.distanceTo(p2);
-        }
-      });
-      document.getElementById('stat-routes').textContent = (totalM/1000).toFixed(1);
-
-    } else if (cfg.type === 'polygon') {
-      leafLayer = L.geoJSON(fc, {
-        style: { color: cfg.color, weight: 1, fillColor: cfg.color, fillOpacity: 0.06, opacity: 0.5 },
-        onEachFeature: (f, l) => {
-          l.bindPopup(buildPopup(f.properties, cfg.label));
-          l.on('click', () => showInfo(f.properties, cfg.label));
-        }
-      });
-    }
-
-    if (leafLayer) {
-      leafLayer.addTo(map);
-      layers[name] = leafLayer;
-    }
-
-  } catch(err) {
-    console.error(`Failed to load ${name}:`, err);
-    document.getElementById(`cnt-${name}`).textContent = 'err';
+// ── Build one Leaflet layer ──
+function buildLeafletLayer(cfg, geojson) {
+  if (cfg.type === 'point') {
+    return L.geoJSON(geojson, {
+      pointToLayer: (f, ll) => L.circleMarker(ll, {
+        radius: cfg.radius ?? 5,
+        fillColor: cfg.color,
+        color: '#0a0e14',
+        weight: 1.5,
+        fillOpacity: 0.9
+      }),
+      onEachFeature: (f, l) => {
+        l.bindPopup(buildPopup(f.properties, cfg.label));
+        l.on('click', () => showInfo(f.properties, cfg.label));
+      }
+    });
+  } else if (cfg.type === 'line') {
+    return L.geoJSON(geojson, {
+      style: { color: cfg.color, weight: cfg.weight ?? 2.5, opacity: 0.88 },
+      onEachFeature: (f, l) => {
+        l.bindPopup(buildPopup(f.properties, cfg.label));
+        l.on('click', () => showInfo(f.properties, cfg.label));
+      }
+    });
+  } else {
+    return L.geoJSON(geojson, {
+      style: { color: cfg.color, weight: 1, fillColor: cfg.color, fillOpacity: 0.06, opacity: 0.5 },
+      onEachFeature: (f, l) => {
+        l.bindPopup(buildPopup(f.properties, cfg.label));
+        l.on('click', () => showInfo(f.properties, cfg.label));
+      }
+    });
   }
 }
 
-// ── MAIN LOAD ──
-async function init() {
-  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
-    document.getElementById('db-status').textContent = '⚠ Not configured';
-    document.getElementById('db-status').style.color = '#ff6b35';
-    document.getElementById('loading-bar').classList.add('done');
-    return;
-  }
+// ── Load a single layer ──
+async function loadLayer(cfg) {
+  const cntEl = document.getElementById(`cnt-${cfg.id}`);
+  try {
+    const gj = await fetchGeoJSON(cfg.table);
+    geoCache[cfg.id] = gj;
+    const count = gj.features?.length ?? 0;
+    if (cntEl) cntEl.textContent = count;
+    if (cfg.statEl) {
+      const el = document.getElementById(cfg.statEl);
+      if (el) el.textContent = count.toLocaleString();
+    }
+    if (cfg.type === 'line') {
+      totalKm += calcKm(gj);
+      document.getElementById('stat-km').textContent = totalKm.toFixed(1);
+    }
 
+    const ll = buildLeafletLayer(cfg, gj);
+    ll.addTo(map);
+    leafLayers[cfg.id] = ll;
+
+    // Build (but don't show) label layer
+    const lblLayer = buildLabelLayer(cfg, gj);
+    if (lblLayer) labelLayers[cfg.id] = lblLayer;
+
+  } catch(err) {
+    console.error(`Layer failed — ${cfg.table}:`, err.message);
+    if (cntEl) { cntEl.textContent = 'ERR'; cntEl.style.color = '#ff4d6d'; }
+  }
+}
+
+// ── Reload a layer (used by Realtime) ──
+async function reloadLayer(id) {
+  const cfg = LAYER_CONFIG.find(c => c.id === id);
+  if (!cfg) return;
+  // Remove old layers
+  if (leafLayers[id]) { map.removeLayer(leafLayers[id]); delete leafLayers[id]; }
+  if (labelLayers[id]) { map.removeLayer(labelLayers[id]); delete labelLayers[id]; }
+  await loadLayer(cfg);
+  // Re-add label if it was on
+  const lbBtn = document.getElementById(`lbl-${id}`);
+  if (lbBtn?.classList.contains('on') && labelLayers[id]) labelLayers[id].addTo(map);
+  console.info(`[Realtime] Reloaded layer: ${id}`);
+}
+
+// ── Toggle layer visibility ──
+function toggleLayer(id) {
+  const checked = document.getElementById(`tog-${id}`).checked;
+  if (!leafLayers[id]) return;
+  checked ? leafLayers[id].addTo(map) : map.removeLayer(leafLayers[id]);
+  if (labelLayers[id]) checked
+    ? (document.getElementById(`lbl-${id}`)?.classList.contains('on') && labelLayers[id].addTo(map))
+    : map.removeLayer(labelLayers[id]);
+}
+
+// ── Toggle labels ──
+function toggleLabels(id) {
+  const btn = document.getElementById(`lbl-${id}`);
+  const isOn = btn.classList.toggle('on');
+  if (!labelLayers[id]) return;
+  const isVisible = document.getElementById(`tog-${id}`)?.checked;
+  if (isOn && isVisible) labelLayers[id].addTo(map);
+  else map.removeLayer(labelLayers[id]);
+}
+
+// ── Build sidebar layer rows ──
+function buildLayerList() {
+  const list = document.getElementById('layer-list');
+  list.innerHTML = '';
+  LAYER_CONFIG.forEach(cfg => {
+    const isLine = cfg.type === 'line';
+    const dotEl = isLine
+      ? `<div class="layer-line" style="background:${cfg.color}"></div>`
+      : `<div class="layer-dot" style="background:${cfg.color}"></div>`;
+    const row = document.createElement('div');
+    row.className = 'layer-item';
+    row.innerHTML = `
+      <div class="layer-left">${dotEl}${cfg.label}</div>
+      <div class="layer-actions">
+        <span class="layer-count" id="cnt-${cfg.id}">…</span>
+        <button class="lbl-tog" id="lbl-${cfg.id}" onclick="toggleLabels('${cfg.id}')">LABELS</button>
+        <label class="toggle">
+          <input type="checkbox" id="tog-${cfg.id}" checked onchange="toggleLayer('${cfg.id}')">
+          <div class="toggle-slider"></div>
+        </label>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+// ── Nominatim search ──
+document.getElementById('search-input').addEventListener('keydown', async e => {
+  if (e.key !== 'Enter') return;
+  const q = e.target.value.trim();
+  if (!q) return;
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ', KwaZulu-Natal, South Africa')}&format=json&limit=1`);
+    const d = await res.json();
+    if (d.length) {
+      map.flyTo([+d[0].lat, +d[0].lon], 17, { duration: 1.2 });
+    } else {
+      alert('Location not found. Try adding a street name or suburb.');
+    }
+  } catch(err) { console.warn('Search error:', err); }
+});
+
+// ── Supabase Realtime ──
+// Listens on raw tables; reloads from views when changes occur
+// To enable: Supabase Dashboard → Database → Replication → enable each table
+function setupRealtime() {
+  try {
+    const channel = sb.channel('fiber-changes')
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_poles'    }, () => reloadLayer('poles'))
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_manwhole' }, () => reloadLayer('manholes'))
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_Dome'     }, () => reloadLayer('domes'))
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_houses'   }, () => reloadLayer('houses'))
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_144F'     }, () => reloadLayer('cable144'))
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_48F'      }, () => reloadLayer('cable48'))
+      .on('postgres_changes', { event:'*', schema:'public', table:'d_s'        }, () => reloadLayer('routes'))
+      .subscribe(status => {
+        const badge = document.getElementById('rt-status');
+        const txt   = document.getElementById('rt-text');
+        if (status === 'SUBSCRIBED') {
+          badge.classList.remove('off');
+          txt.textContent = 'Live sync active';
+        } else {
+          badge.classList.add('off');
+          txt.textContent = status;
+        }
+      });
+  } catch(err) {
+    document.getElementById('rt-text').textContent = 'Realtime unavailable';
+  }
+}
+
+// ── Main init ──
+async function init() {
+  buildLayerList();
   document.getElementById('db-status').textContent = 'Loading…';
 
-  await Promise.all(
-    Object.entries(TABLES).map(([name, cfg]) => loadLayer(name, cfg))
-  );
+  // Load all layers in parallel
+  await Promise.all(LAYER_CONFIG.map(cfg => loadLayer(cfg)));
 
   document.getElementById('db-status').textContent = 'Connected ✓';
   document.getElementById('db-status').style.color = '#00ff88';
   document.getElementById('loading-bar').classList.add('done');
 
-  // Fit map to loaded data
-  const allLayers = Object.values(layers).filter(Boolean);
-  if (allLayers.length > 0) {
-    const group = L.featureGroup(allLayers);
-    const bounds = group.getBounds();
-    if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40] });
+  // Fit map to all loaded data
+  const all = Object.values(leafLayers).filter(Boolean);
+  if (all.length) {
+    const bounds = L.featureGroup(all).getBounds();
+    if (bounds.isValid()) map.fitBounds(bounds, { padding:[40,40] });
   }
+
+  // Start Realtime
+  setupRealtime();
 }
 
 init();
